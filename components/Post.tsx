@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Post } from '@prisma/client';
+import { Post as PostType } from '@prisma/client';
 
 export type PostProps = {
-  post: Post;
+  post: PostType;
 };
 
 const Post: React.FC<PostProps> = ({ post }) => {
