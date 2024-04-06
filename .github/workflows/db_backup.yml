@@ -9,7 +9,7 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Postgres Dump Backup
         uses: tj-actions/pg-dump@v3
         with:
@@ -17,3 +17,8 @@ jobs:
           postgresql_version: "15"
           path: 'backups/backup_$(date +"%Y%m%d%H%M%S").sql'
           options: '-O'
+      - name: Upload backup
+        uses: actions/upload-artifact@v2
+        with:
+            name: Database backup
+            path: backups/*.sql
