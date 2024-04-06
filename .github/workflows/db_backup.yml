@@ -15,10 +15,15 @@ jobs:
         with:
           database_url: ${{ secrets.DATABASE_URL }}
           postgresql_version: "15"
-          path: 'backups/backup_$(date +"%Y%m%d%H%M%S").sql'
+          path: 'backups/backup.sql'
           options: '-O'
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y%m%d%H%M%S')"
+      - name: Rename backup
+        run: mv backups/backup.sql backups/backup_${{ steps.date.outputs.date }}.sql
       - name: Upload backup
         uses: actions/upload-artifact@v2
         with:
-            name: Database backup
-            path: backups/*.sql
+          name: Database backup
+          path: backups/*.sql
