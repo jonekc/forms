@@ -1,19 +1,15 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextApiRequest } from 'next';
 import prisma from '../../lib/prisma';
+import { getDecodedToken } from './common';
 
 const checkAuth = async (req: NextApiRequest) => {
   let check = { isAuthorized: true, isAdmin: false };
 
-  const token = req.headers.authorization?.replace('Bearer ', '');
-  if (!token) {
+  const decodedToken = getDecodedToken(req);
+  if (!decodedToken || typeof decodedToken === 'string') {
     check = { isAuthorized: false, isAdmin: false };
   } else {
     try {
-      const decodedToken = jwt.verify(
-        token,
-        process.env.JWT_SECRET_KEY,
-      ) as JwtPayload;
       const userId = decodedToken.userId;
 
       const user = await prisma.user.findFirst({

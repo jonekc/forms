@@ -1,12 +1,12 @@
 import React from 'react';
 import Layout from '../components/Layout';
 import useSWR from 'swr';
-import { Post as PostType } from '@prisma/client';
 import Post from '../components/Post';
 import { fetcher } from '../utils/client/api';
+import { PostWithAuthor } from '../types/post';
 
 const Posts: React.FC = () => {
-  const { data: postsResponse, error } = useSWR<PostType[]>(
+  const { data: postsResponse, error } = useSWR<PostWithAuthor[]>(
     '/api/posts',
     fetcher,
   );
