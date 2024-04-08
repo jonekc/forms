@@ -20,16 +20,23 @@ export default async function handler(
       }
 
       // Verify the password hash
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      const isPasswordValid = await bcrypt.compare(
+        password || '',
+        user.password || '',
+      );
 
       if (!isPasswordValid) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
       // Generate JWT token
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
-        expiresIn: '1h',
-      });
+      const token = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET_KEY || '',
+        {
+          expiresIn: '1h',
+        },
+      );
 
       return res.status(200).json({ token });
     } catch (error) {

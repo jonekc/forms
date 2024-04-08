@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
+import { getUserToken } from '../utils/client/storage';
 
 const Form: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -8,12 +9,14 @@ const Form: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = getUserToken();
 
     fetch('/api/posts', {
       method: 'POST',
       body: JSON.stringify({ title, content, published }),
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
   };

@@ -1,18 +1,23 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Post as PostType } from '@prisma/client';
+import { PostWithAuthor } from '../types/post';
 
 export type PostProps = {
-  post: PostType;
+  post: PostWithAuthor;
 };
 
 const Post: React.FC<PostProps> = ({ post }) => {
   return (
     <div>
       <h2>{post.title}</h2>
-      {/* <small>By {authorName}</small> */}
+      {post.author && (
+        <>
+          <small>By {post.author.name}</small>
+          <br />
+        </>
+      )}
       {post.published ? null : <small>Draft</small>}
-      <ReactMarkdown children={post.content} />
+      <ReactMarkdown children={post.content || ''} />
       <style jsx>{`
         div {
           color: inherit;
