@@ -3,9 +3,9 @@ import prisma from '../../lib/prisma';
 import { getDecodedToken } from './common';
 
 const checkAuth = async (req: NextApiRequest) => {
+  const decodedToken = getDecodedToken(req);
   let check = { isAuthorized: true, isAdmin: false };
 
-  const decodedToken = getDecodedToken(req);
   if (!decodedToken || typeof decodedToken === 'string') {
     check = { isAuthorized: false, isAdmin: false };
   } else {
@@ -29,12 +29,14 @@ const checkAuth = async (req: NextApiRequest) => {
       }
       if (user?.roles.some((role) => role.role.name === 'admin')) {
         check = { isAuthorized: true, isAdmin: true };
+      } else {
+        check = { isAuthorized: true, isAdmin: false };
       }
     } catch (error) {
       check = { isAuthorized: false, isAdmin: false };
     }
   }
-  return check;
+  return { ...check, decodedToken };
 };
 
 export { checkAuth };
