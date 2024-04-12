@@ -10,11 +10,11 @@ export type PostProps = {
 };
 
 const Post: React.FC<PostProps> = ({ post }) => {
-  const [editing, setEditing] = React.useState(false);
-  const [title, setTitle] = React.useState(post.title);
-  const [authorId, setAuthorId] = React.useState(post.author?.id);
-  const [content, setContent] = React.useState(post.content || '');
-  const [published, setPublished] = React.useState(post.published || false);
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState(post.title);
+  const [authorId, setAuthorId] = useState(post.author?.id);
+  const [content, setContent] = useState(post.content || '');
+  const [published, setPublished] = useState(post.published || false);
 
   const { data: users } = useSWR<User[]>('/api/users', fetcher);
 

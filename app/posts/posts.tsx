@@ -1,9 +1,10 @@
+'use client';
+
 import React from 'react';
-import Layout from '../components/Layout';
 import useSWR from 'swr';
-import Post from '../components/Post';
-import { fetcher } from '../utils/client/api';
-import { PostWithAuthor } from '../types/post';
+import Post from '../../components/Post';
+import { fetcher } from '../../utils/client/api';
+import { PostWithAuthor } from '../../types/post';
 
 const Posts: React.FC = () => {
   const { data: postsResponse, error } = useSWR<PostWithAuthor[]>(
@@ -14,17 +15,13 @@ const Posts: React.FC = () => {
   const posts = !error ? postsResponse : undefined;
 
   return (
-    <Layout>
-      <div className="page">
-        <h1>Posts</h1>
-        <main>
-          {posts?.map((post) => (
-            <div key={post.id} className="post">
-              <Post post={post} />
-            </div>
-          ))}
-        </main>
-      </div>
+    <>
+      <h1>Posts</h1>
+      {posts?.map((post) => (
+        <div key={post.id} className="post">
+          <Post post={post} />
+        </div>
+      ))}
       <style jsx>{`
         .post {
           background: white;
@@ -39,7 +36,7 @@ const Posts: React.FC = () => {
           margin-top: 1rem;
         }
       `}</style>
-    </Layout>
+    </>
   );
 };
 

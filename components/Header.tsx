@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
+'use client';
+
+import React, { CSSProperties, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { TOKEN_KEY, getUserToken } from '../utils/client/storage';
+import { usePathname, useRouter } from 'next/navigation';
 
 const Header: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   const router = useRouter();
-  const isActive: (pathname: string) => boolean = (pathname) =>
-    router.pathname === pathname;
+  const pathname = usePathname();
+  const isActive: (link: string) => boolean = (link: string) =>
+    link === pathname;
 
   useEffect(() => {
     setIsAuthorized(!!getUserToken());
@@ -23,49 +26,28 @@ const Header: React.FC = () => {
   let left = (
     <div className="left">
       {isAuthorized && (
-        <Link href="/posts">
-          <a className="bold" data-active={isActive('/posts')}>
-            Posts
-          </a>
+        <Link href="/posts" style={linkStyles(isActive('/posts'))}>
+          Posts
         </Link>
       )}
-      <Link href="/">
-        <a className="bold" data-active={isActive('/')}>
-          New
-        </a>
+      <Link
+        href="/"
+        style={{ ...linkStyles(isActive('/')), marginLeft: '1rem' }}
+      >
+        New
       </Link>
       {isAuthorized ? (
         <span className="bold" onClick={handleLogout}>
           Logout
         </span>
       ) : (
-        <Link href="/login">
-          <a className="bold" data-active={isActive('/login')}>
-            Login
-          </a>
+        <Link href="/login" style={linkStyles(isActive('/login'))}>
+          Login
         </Link>
       )}
       <style jsx>{`
         .bold {
           font-weight: bold;
-        }
-
-        a {
-          text-decoration: none;
-          color: #000;
-          display: inline-block;
-        }
-
-        .left a[data-active='true'] {
-          color: gray;
-        }
-
-        a + a {
-          margin-left: 1rem;
-        }
-
-        a:hover {
-          color: #555555;
         }
 
         span {
@@ -91,5 +73,13 @@ const Header: React.FC = () => {
     </nav>
   );
 };
+
+const linkStyles: (isActive: boolean) => CSSProperties = (isActive) => ({
+  fontWeight: 'bold',
+  textDecoration: 'none',
+  display: 'inline-block',
+  color: isActive ? 'gray' : '#000',
+  // '&:hover': { color: '#555555' },
+});
 
 export default Header;
