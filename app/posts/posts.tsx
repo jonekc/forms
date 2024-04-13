@@ -16,26 +16,10 @@ const Posts: React.FC = () => {
 
   return (
     <>
-      <h1>Posts</h1>
-      {posts?.map((post) => (
-        <div key={post.id} className="post">
-          <Post post={post} />
-        </div>
-      ))}
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
-
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 1rem;
-        }
-      `}</style>
+      <h1 className="font-bold text-2xl my-4">Posts</h1>
+      <div className="grid gap-3">
+        {posts?.map((post) => <Post key={post.id} post={post} />)}
+      </div>
     </>
   );
 };

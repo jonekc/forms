@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { PostWithAuthor } from '../types/post';
 import { fetcher, mutateResponse } from '../utils/client/api';
 import useSWR, { mutate } from 'swr';
 import { User } from '@prisma/client';
+import { ConfirmationModal } from './ConfirmationModal';
+import { Input } from './form/Input';
+import { Select } from './form/Select';
+import { Textarea } from './form/Textarea';
+import { Checkbox } from './form/Checkbox';
 
 export type PostProps = {
   post: PostWithAuthor;
@@ -15,6 +20,8 @@ const Post: React.FC<PostProps> = ({ post }) => {
   const [authorId, setAuthorId] = useState(post.author?.id);
   const [content, setContent] = useState(post.content || '');
   const [published, setPublished] = useState(post.published || false);
+
+  const confirmationModalRef = useRef<HTMLDialogElement>(null);
 
   const { data: users } = useSWR<User[]>('/api/users', fetcher);
 
@@ -36,58 +43,109 @@ const Post: React.FC<PostProps> = ({ post }) => {
   };
 
   return (
-    <div>
+    <div className="card glass p-4">
       {editing ? (
-        <>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} />
-          <select
-            value={authorId}
+        <div className="grid gap-2">
+          <Input
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <Select
+            value={authorId || ''}
             onChange={(e) => setAuthorId(e.target.value)}
-          >
-            <option value="">No author</option>
-            {users?.map((user) => <option value={user.id}>{user.name}</option>)}
-          </select>
-          <textarea
+            options={[
+              { label: '', value: 'No author' },
+              ...(users || []).map((user) => ({
+                label: user.id,
+                value: user.name || '',
+              })),
+            ]}
+          />
+          <Textarea
+            placeholder="Content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
-          <label>
-            <input
-              type="checkbox"
-              checked={published}
-              onChange={(e) => setPublished(e.target.checked)}
-            />
-            Published
-          </label>
-          <button onClick={handleSave}>Save</button>
-          <button onClick={handleDelete}>Delete</button>
-        </>
+          <Checkbox
+            label="Published"
+            checked={published}
+            onChange={(e) => setPublished(e.target.checked)}
+          />
+          <div className="flex gap-2">
+            <button className="btn btn-sm btn-primary" onClick={handleSave}>
+              Save
+            </button>
+            <button
+              className="btn btn-sm btn-ghost"
+              onClick={() => {
+                setEditing(false);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       ) : (
-        <>
-          <h2>{post.title}</h2>
-          {post.author && (
-            <>
-              <small>By {post.author.name}</small>
-              <br />
-            </>
-          )}
-          {post.published ? null : <small>Draft</small>}
-          <ReactMarkdown children={post.content || ''} />
-          <button
-            onClick={() => {
-              setEditing(true);
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div>
+            <h2 className="text-lg font-medium">{post.title}</h2>
+            {post.author && (
+              <>
+                <small>By {post.author.name}</small>
+                <br />
+              </>
+            )}
+            {post.published ? null : <small>Draft</small>}
+            <ReactMarkdown children={post.content || ''} />
+            <div className="flex gap-2 mt-2">
+              <button
+                className="btn btn-sm btn-primary"
+                onClick={() => {
+                  setEditing(true);
+                }}
+              >
+                Edit
+              </button>
+              <button
+                className="btn btn-sm btn-error"
+                onClick={() => {
+                  confirmationModalRef.current?.showModal();
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              flexWrap: 'wrap',
             }}
           >
-            Edit
-          </button>
-        </>
+            {post.images.map((image) => (
+              <img
+                key={image.id}
+                src={image.url}
+                alt=""
+                width={160}
+                height={90}
+              />
+            ))}
+          </div>
+        </div>
       )}
-      <style jsx>{`
-        div {
-          color: inherit;
-          padding: 2rem;
-        }
-      `}</style>
+      <ConfirmationModal
+        ref={confirmationModalRef}
+        title={`Are you sure you want to delete "${post.title}" post?`}
+        message="This action cannot be undone."
+        onConfirm={async () => {
+          confirmationModalRef.current?.close();
+          handleDelete();
+        }}
+      />
     </div>
   );
 };

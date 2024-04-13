@@ -1,5 +1,5 @@
-import { Post, User } from '@prisma/client';
+import { Image, Post, User } from '@prisma/client';
 
-type PostWithAuthor = Post & { author: User | null };
+type PostWithAuthor = Post & { author: User | null; images: Image[] };
 
 export type { PostWithAuthor };

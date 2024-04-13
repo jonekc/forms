@@ -1,5 +1,8 @@
 import { Metadata } from 'next';
 import Header from '../components/Header';
+import './globals.css';
+import { AuthProvider } from '../providers/AuthProvider';
+import { ToastProvider } from '../providers/ToastProvider';
 
 export const metadata: Metadata = {
   title: 'Forms application',
@@ -15,8 +18,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        <main className="layout">{children}</main>
+        <AuthProvider>
+          <ToastProvider>
+            <Header />
+            <main className="m-auto max-w-6xl px-5 pb-5 w-full">
+              {children}
+            </main>
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );
