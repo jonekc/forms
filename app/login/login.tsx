@@ -10,6 +10,7 @@ import { ToastContext } from '../../providers/ToastProvider';
 const Login = () => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const { setIsAuthorized } = useContext(AuthContext);
   const { showToast } = useContext(ToastContext);
@@ -18,6 +19,7 @@ const Login = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
 
     fetch('/api/auth', {
       method: 'POST',
@@ -40,6 +42,9 @@ const Login = () => {
       })
       .catch((_error) => {
         showToast("Couldn't log in", 'alert-error');
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -64,7 +69,12 @@ const Login = () => {
           }}
           placeholder="Password"
         />
-        <button type="submit" className="btn btn-sm btn-primary">
+        <button
+          type="submit"
+          className="btn btn-sm btn-primary"
+          disabled={isLoading}
+        >
+          {isLoading && <span className="loading loading-spinner" />}
           Submit
         </button>
       </form>

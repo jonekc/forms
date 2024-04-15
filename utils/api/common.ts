@@ -6,7 +6,9 @@ const getDecodedToken = () => {
   const token = headersList.get('authorization')?.replace('Bearer ', '');
   let decodedToken: JwtPayload | string = '';
   if (token) {
-    decodedToken = jwt.verify(token || '', process.env.JWT_SECRET_KEY || '');
+    try {
+      decodedToken = jwt.verify(token || '', process.env.JWT_SECRET_KEY || '');
+    } catch (e) {}
   }
   return decodedToken;
 };

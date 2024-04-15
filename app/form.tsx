@@ -2,15 +2,19 @@
 
 import React, { ChangeEvent, useState } from 'react';
 import { getUserToken } from '../utils/client/storage';
+import { Input } from '../components/form/Input';
+import { Checkbox } from '../components/form/Checkbox';
 
 const Form: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [published, setPublished] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
+  const [isUpdating, setUpdating] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setUpdating(true);
     const token = getUserToken();
 
     const formData = new FormData();
@@ -22,63 +26,50 @@ const Form: React.FC = () => {
       formData.append(`file${index + 1}`, file);
     });
 
-    fetch('/api/posts', {
+    await fetch('/api/posts', {
       method: 'POST',
       body: formData,
       headers: {
         ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
+    setUpdating(false);
   };
 
   const handleFilesChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(e.target.files);
+      const fileList = e.target.files as FileList;
+      setFiles(fileList);
     }
   };
 
   return (
     <>
-      <h1>Create new post</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="title">Title:</label>
-          <br />
-          <input
-            type="text"
-            id="title"
-            name="title"
-            required
-            onChange={(e) => {
-              setTitle(e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <label htmlFor="content">Content:</label>
-          <br />
-          <input
-            type="text"
-            id="content"
-            name="content"
-            required
-            onChange={(e) => {
-              setContent(e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <label htmlFor="published">Published:</label>
-          <input
-            type="checkbox"
-            id="published"
-            name="published"
-            onChange={(e) => {
-              setPublished(e.target.checked);
-            }}
-          />
-        </div>
-        <br />
+      <h1 className="font-bold text-2xl my-4">Create new post</h1>
+      <form onSubmit={handleSubmit} className="grid gap-2">
+        <Input
+          placeholder="title"
+          required
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+          }}
+        />
+        <Input
+          placeholder="content"
+          required
+          value={content}
+          onChange={(e) => {
+            setContent(e.target.value);
+          }}
+        />
+        <Checkbox
+          label="published"
+          checked={published}
+          onChange={(e) => {
+            setPublished(e.target.checked);
+          }}
+        />
         <div>
           <label htmlFor="images">Images: </label>
           <input
@@ -90,12 +81,26 @@ const Form: React.FC = () => {
             onChange={handleFilesChange}
           />
         </div>
-        <br />
         {[...(files || [])].map((file, index) => (
-          <div key={index}>{file.name}</div>
+          <div key={index} className="flex items-center gap-3">
+            <img
+              src={URL.createObjectURL(file)}
+              alt={file.name}
+              className="w-[80px] h-[45px] object-contain"
+            />
+            <span>{file.name}</span>
+          </div>
         ))}
-        <br />
-        <button type="submit">Submit</button>
+        <div className="mt-3">
+          <button
+            className="btn btn-sm btn-primary"
+            type="submit"
+            disabled={isUpdating}
+          >
+            {isUpdating && <span className="loading loading-spinner" />}
+            Submit
+          </button>
+        </div>
       </form>
     </>
   );

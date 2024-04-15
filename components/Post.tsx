@@ -20,12 +20,14 @@ const Post: React.FC<PostProps> = ({ post }) => {
   const [authorId, setAuthorId] = useState(post.author?.id);
   const [content, setContent] = useState(post.content || '');
   const [published, setPublished] = useState(post.published || false);
+  const [isSaving, setSaving] = useState(false);
 
   const confirmationModalRef = useRef<HTMLDialogElement>(null);
 
   const { data: users } = useSWR<User[]>('/api/users', fetcher);
 
   const handleSave = async () => {
+    setSaving(true);
     await mutateResponse(`/api/posts/${post.id}`, 'PATCH', {
       title,
       authorId: authorId || null,
@@ -33,6 +35,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
       published,
     });
     await mutate('/api/posts');
+    setSaving(false);
     setEditing(false);
   };
 
@@ -73,7 +76,12 @@ const Post: React.FC<PostProps> = ({ post }) => {
             onChange={(e) => setPublished(e.target.checked)}
           />
           <div className="flex gap-2">
-            <button className="btn btn-sm btn-primary" onClick={handleSave}>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving && <span className="loading loading-spinner" />}
               Save
             </button>
             <button
