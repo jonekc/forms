@@ -4,6 +4,7 @@ import React, { ChangeEvent, useState } from 'react';
 import { getUserToken } from '../utils/client/storage';
 import { Input } from '../components/form/Input';
 import { Checkbox } from '../components/form/Checkbox';
+import { Loader } from '../components/Loader';
 
 const Form: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -97,7 +98,7 @@ const Form: React.FC = () => {
             type="submit"
             disabled={isUpdating}
           >
-            {isUpdating && <span className="loading loading-spinner" />}
+            {isUpdating && <Loader />}
             Submit
           </button>
         </div>

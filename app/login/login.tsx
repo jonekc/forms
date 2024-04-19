@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { AuthContext } from '../../providers/AuthProvider';
 import { Input } from '../../components/form/Input';
 import { ToastContext } from '../../providers/ToastProvider';
+import { Loader } from '../../components/Loader';
 
 const Login = () => {
   const [name, setName] = useState('');
@@ -74,7 +75,7 @@ const Login = () => {
           className="btn btn-sm btn-primary"
           disabled={isLoading}
         >
-          {isLoading && <span className="loading loading-spinner" />}
+          {isLoading && <Loader />}
           Submit
         </button>
       </form>

@@ -1,4 +1,4 @@
-import { getUserToken } from './storage';
+import { TOKEN_KEY, getUserToken } from './storage';
 
 const fetcher = async (url: string) => {
   const headers = {
@@ -6,6 +6,10 @@ const fetcher = async (url: string) => {
   };
 
   const res = await fetch(url, { headers });
+  if (res.status === 401) {
+    localStorage.removeItem(TOKEN_KEY);
+    window.location.href = '/login';
+  }
   if (!res.ok) {
     throw new Error('An error occurred while fetching the data');
   }

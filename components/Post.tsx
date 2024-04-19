@@ -9,6 +9,7 @@ import { Input } from './form/Input';
 import { Select } from './form/Select';
 import { Textarea } from './form/Textarea';
 import { Checkbox } from './form/Checkbox';
+import { Loader } from './Loader';
 
 export type PostProps = {
   post: PostWithAuthor;
@@ -21,6 +22,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
   const [content, setContent] = useState(post.content || '');
   const [published, setPublished] = useState(post.published || false);
   const [isSaving, setSaving] = useState(false);
+  const [isDeleting, setDeleting] = useState(false);
 
   const confirmationModalRef = useRef<HTMLDialogElement>(null);
 
@@ -40,9 +42,11 @@ const Post: React.FC<PostProps> = ({ post }) => {
   };
 
   const handleDelete = async () => {
+    setDeleting(true);
     await mutateResponse(`/api/posts/${post.id}`, 'DELETE');
     await mutate('/api/posts');
     setEditing(false);
+    setDeleting(false);
   };
 
   return (
@@ -81,7 +85,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
               onClick={handleSave}
               disabled={isSaving}
             >
-              {isSaving && <span className="loading loading-spinner" />}
+              {isSaving && <Loader />}
               Save
             </button>
             <button
@@ -149,9 +153,10 @@ const Post: React.FC<PostProps> = ({ post }) => {
         ref={confirmationModalRef}
         title={`Are you sure you want to delete "${post.title}" post?`}
         message="This action cannot be undone."
+        buttonLoading={isDeleting}
         onConfirm={async () => {
+          await handleDelete();
           confirmationModalRef.current?.close();
-          handleDelete();
         }}
       />
     </div>
