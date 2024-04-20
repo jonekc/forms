@@ -15,6 +15,8 @@ model Post {
   published Boolean @default(false)
   authorId  String?
   category  String?
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
   author    User?   @relation(fields: [authorId], references: [id])
   images    Image[]
 }

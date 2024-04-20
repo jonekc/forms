@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next",
     "build": "prisma generate && next build",
-    "start": "next start"
+    "start": "next start",
+    "migration:draft": "prisma migrate dev --create-only",
+    "migration:dev": "prisma migrate dev"
   },
   "keywords": [],
   "author": "",

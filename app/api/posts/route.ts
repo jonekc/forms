@@ -13,6 +13,7 @@ const GET = async () => {
 
   if (isAuthorized && isAdmin) {
     const posts = await prisma.post.findMany({
+      orderBy: { createdAt: 'asc' },
       include: { author: true, images: true },
     });
     return NextResponse.json(posts, { status: 200 });
