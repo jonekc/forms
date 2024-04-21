@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import { Loader } from './Loader';
+import { CloseButton } from './CloseButton';
 
 type ConfirmationModalProps = {
   onConfirm: () => void;
@@ -13,9 +14,7 @@ const ConfirmationModal = forwardRef<HTMLDialogElement, ConfirmationModalProps>(
     <dialog className="modal" ref={ref}>
       <div className="modal-box max-w-xl">
         <form method="dialog">
-          <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-            ✕
-          </button>
+          <CloseButton className="absolute right-2 top-2" />
         </form>
         <h3 className="font-bold text-lg mr-3">{title}</h3>
         <p className="pt-4">{message}</p>

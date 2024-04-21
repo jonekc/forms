@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
+import { CloseButton } from './CloseButton';
 
 type ToastType =
   | 'alert-success'
@@ -20,15 +21,12 @@ const Toast = ({
   <div className="toast">
     <div className={`alert ${type} p-3`}>
       <span>{message}</span>
-      <button
+      <CloseButton
         type="button"
-        className="btn btn-sm btn-circle btn-ghost"
         onClick={() => {
           setIsVisible(false);
         }}
-      >
-        ✕
-      </button>
+      />
     </div>
   </div>
 );

@@ -3,19 +3,21 @@ import ReactMarkdown from 'react-markdown';
 import { PostWithAuthor } from '../types/post';
 import { fetcher, mutateResponse } from '../utils/client/api';
 import useSWR, { mutate } from 'swr';
-import { User } from '@prisma/client';
+import { Image as ImageType, User } from '@prisma/client';
 import { ConfirmationModal } from './ConfirmationModal';
 import { Input } from './form/Input';
 import { Select } from './form/Select';
 import { Textarea } from './form/Textarea';
 import { Checkbox } from './form/Checkbox';
 import { Loader } from './Loader';
+import Image from 'next/image';
+import { PhotoModal } from './PhotoModal';
 
 export type PostProps = {
   post: PostWithAuthor;
 };
 
-const Post: React.FC<PostProps> = ({ post }) => {
+const Post = ({ post }: PostProps) => {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(post.title);
   const [authorId, setAuthorId] = useState(post.author?.id);
@@ -23,8 +25,10 @@ const Post: React.FC<PostProps> = ({ post }) => {
   const [published, setPublished] = useState(post.published || false);
   const [isSaving, setSaving] = useState(false);
   const [isDeleting, setDeleting] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<ImageType>();
 
   const confirmationModalRef = useRef<HTMLDialogElement>(null);
+  const photoModalRef = useRef<HTMLDialogElement>(null);
 
   const { data: users } = useSWR<User[]>('/api/users', fetcher);
 
@@ -47,6 +51,23 @@ const Post: React.FC<PostProps> = ({ post }) => {
     await mutate('/api/posts');
     setEditing(false);
     setDeleting(false);
+  };
+
+  const handlePrev = () => {
+    if (selectedImage) {
+      const index = post.images.indexOf(selectedImage);
+      if (index > 0) {
+        setSelectedImage(post.images[index - 1]);
+      }
+    }
+  };
+  const handleNext = () => {
+    if (selectedImage) {
+      const index = post.images.indexOf(selectedImage);
+      if (index < post.images.length - 1) {
+        setSelectedImage(post.images[index + 1]);
+      }
+    }
   };
 
   return (
@@ -109,7 +130,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
               </>
             )}
             {post.published ? null : <small>Draft</small>}
-            <ReactMarkdown children={post.content || ''} />
+            <ReactMarkdown>{post.content || ''}</ReactMarkdown>
             <div className="flex gap-2 mt-2">
               <button
                 className="btn btn-sm btn-primary"
@@ -138,12 +159,16 @@ const Post: React.FC<PostProps> = ({ post }) => {
             }}
           >
             {post.images.map((image) => (
-              <img
+              <Image
                 key={image.id}
                 src={image.url}
                 alt=""
                 width={160}
                 height={90}
+                onClick={() => {
+                  setSelectedImage(image);
+                  photoModalRef.current?.showModal();
+                }}
               />
             ))}
           </div>
@@ -158,6 +183,14 @@ const Post: React.FC<PostProps> = ({ post }) => {
           await handleDelete();
           confirmationModalRef.current?.close();
         }}
+      />
+
+      <PhotoModal
+        ref={photoModalRef}
+        title={selectedImage?.url.split('/').pop() || ''}
+        src={selectedImage?.url || ''}
+        handlePrev={handlePrev}
+        handleNext={handleNext}
       />
     </div>
   );
