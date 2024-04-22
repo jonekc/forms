@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "next",
-    "build": "prisma migrate deploy && next build",
+    "build": "(process.env.VERCEL_ENV === 'production' ? prisma migrate deploy : npm run migration:dev) && next build",
     "start": "next start",
     "migration:draft": "prisma migrate dev --create-only",
     "migration:dev": "prisma migrate dev"
