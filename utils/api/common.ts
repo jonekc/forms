@@ -1,13 +1,19 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { NextApiRequest } from 'next';
+import { headers } from 'next/headers';
 
-const getDecodedToken = (req: NextApiRequest) => {
-  const token = req.headers.authorization?.replace('Bearer ', '');
+const getDecodedToken = () => {
+  const headersList = headers();
+  const token = headersList.get('authorization')?.replace('Bearer ', '');
   let decodedToken: JwtPayload | string = '';
   if (token) {
-    decodedToken = jwt.verify(token || '', process.env.JWT_SECRET_KEY || '');
+    try {
+      decodedToken = jwt.verify(token || '', process.env.JWT_SECRET_KEY || '');
+    } catch (e) {}
   }
   return decodedToken;
 };
 
-export { getDecodedToken };
+const getSupabaseImageUrl = (filename: string) =>
+  `${process.env.SUPABASE_PROJECT_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/${filename}`;
+
+export { getDecodedToken, getSupabaseImageUrl };

@@ -1,93 +1,56 @@
-import React, { useEffect, useState } from 'react';
+'use client';
+
+import React, { useContext } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { TOKEN_KEY, getUserToken } from '../utils/client/storage';
+import { TOKEN_KEY } from '../utils/client/storage';
+import { usePathname, useRouter } from 'next/navigation';
+import { AuthContext } from '../providers/AuthProvider';
 
 const Header: React.FC = () => {
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const { isAuthorized, setIsAuthorized } = useContext(AuthContext);
 
   const router = useRouter();
-  const isActive: (pathname: string) => boolean = (pathname) =>
-    router.pathname === pathname;
-
-  useEffect(() => {
-    setIsAuthorized(!!getUserToken());
-  }, []);
+  const pathname = usePathname();
+  const isActive: (link: string) => boolean = (link: string) =>
+    link === pathname;
 
   const handleLogout = () => {
     localStorage.removeItem(TOKEN_KEY);
     router.push('/');
-    setIsAuthorized(!!getUserToken());
+    setIsAuthorized(false);
   };
 
-  let left = (
-    <div className="left">
+  return (
+    <nav className="flex gap-4 py-4 px-8 bg-primary">
       {isAuthorized && (
-        <Link href="/posts">
-          <a className="bold" data-active={isActive('/posts')}>
-            Posts
-          </a>
+        <Link
+          href="/posts"
+          className={`text-lg hover:text-neutral-content ${isActive('/posts') ? 'text-neutral-content' : 'text-white'}`}
+        >
+          Posts
         </Link>
       )}
-      <Link href="/">
-        <a className="bold" data-active={isActive('/')}>
-          New
-        </a>
+      <Link
+        href="/"
+        className={`text-lg hover:text-neutral-content ${isActive('/') ? 'text-neutral-content' : 'text-white'}`}
+      >
+        New
       </Link>
       {isAuthorized ? (
-        <span className="bold" onClick={handleLogout}>
+        <button
+          className="text-lg text-white hover:text-neutral-content"
+          onClick={handleLogout}
+        >
           Logout
-        </span>
+        </button>
       ) : (
-        <Link href="/login">
-          <a className="bold" data-active={isActive('/login')}>
-            Login
-          </a>
+        <Link
+          href="/login"
+          className={`text-lg hover:text-neutral-content ${isActive('/login') ? 'text-neutral-content' : 'text-white'}`}
+        >
+          Login
         </Link>
       )}
-      <style jsx>{`
-        .bold {
-          font-weight: bold;
-        }
-
-        a {
-          text-decoration: none;
-          color: #000;
-          display: inline-block;
-        }
-
-        .left a[data-active='true'] {
-          color: gray;
-        }
-
-        a + a {
-          margin-left: 1rem;
-        }
-
-        a:hover {
-          color: #555555;
-        }
-
-        span {
-          margin-left: 1rem;
-        }
-      `}</style>
-    </div>
-  );
-
-  let right = null;
-
-  return (
-    <nav>
-      {left}
-      {right}
-      <style jsx>{`
-        nav {
-          display: flex;
-          padding: 2rem;
-          align-items: center;
-        }
-      `}</style>
     </nav>
   );
 };

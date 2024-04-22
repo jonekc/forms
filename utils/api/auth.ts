@@ -1,9 +1,8 @@
-import { NextApiRequest } from 'next';
 import prisma from '../../lib/prisma';
 import { getDecodedToken } from './common';
 
-const checkAuth = async (req: NextApiRequest) => {
-  const decodedToken = getDecodedToken(req);
+const checkAuth = async () => {
+  const decodedToken = getDecodedToken();
   let check = { isAuthorized: true, isAdmin: false };
 
   if (!decodedToken || typeof decodedToken === 'string') {
