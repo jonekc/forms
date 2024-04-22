@@ -12,6 +12,7 @@ import { Checkbox } from './form/Checkbox';
 import { Loader } from './Loader';
 import Image from 'next/image';
 import { PhotoModal } from './PhotoModal';
+import { getPostImageOriginalFilename } from '../utils/client/post';
 
 export type PostProps = {
   post: PostWithAuthor;
@@ -187,7 +188,7 @@ const Post = ({ post }: PostProps) => {
 
       <PhotoModal
         ref={photoModalRef}
-        title={selectedImage?.url.split('/').pop() || ''}
+        title={getPostImageOriginalFilename(selectedImage?.url)}
         src={selectedImage?.url || ''}
         handlePrev={handlePrev}
         handleNext={handleNext}

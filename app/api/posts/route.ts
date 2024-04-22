@@ -44,9 +44,10 @@ const POST = async (req: NextRequest) => {
   try {
     await Promise.all(
       files.map(async (file: File) => {
+        const uniqueId = Date.now().toString();
         const { data, error } = await supabase.storage
           .from(process.env.SUPABASE_BUCKET || '')
-          .upload(file.name, file);
+          .upload(`${uniqueId}-${file.name}`, file);
 
         if (data?.path && !error) {
           filenames.push(data.path);
