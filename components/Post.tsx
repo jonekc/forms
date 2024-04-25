@@ -10,9 +10,11 @@ import { Select } from './form/Select';
 import { Textarea } from './form/Textarea';
 import { Checkbox } from './form/Checkbox';
 import { Loader } from './Loader';
-import Image from 'next/image';
 import { PhotoModal } from './PhotoModal';
 import { getPostImageOriginalFilename } from '../utils/client/post';
+import { Image } from './Image';
+
+const VISIBLE_IMAGES = 4;
 
 export type PostProps = {
   post: PostWithAuthor;
@@ -159,11 +161,10 @@ const Post = ({ post }: PostProps) => {
               flexWrap: 'wrap',
             }}
           >
-            {post.images.map((image) => (
+            {post.images.slice(0, VISIBLE_IMAGES).map((image) => (
               <Image
                 key={image.id}
                 src={image.url}
-                alt=""
                 width={160}
                 height={90}
                 onClick={() => {
@@ -172,6 +173,17 @@ const Post = ({ post }: PostProps) => {
                 }}
               />
             ))}
+            {post.images.length > VISIBLE_IMAGES && (
+              <button
+                className="btn btn-sm ml-2"
+                onClick={() => {
+                  setSelectedImage(post.images[VISIBLE_IMAGES]);
+                  photoModalRef.current?.showModal();
+                }}
+              >
+                More
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -185,7 +197,6 @@ const Post = ({ post }: PostProps) => {
           confirmationModalRef.current?.close();
         }}
       />
-
       <PhotoModal
         ref={photoModalRef}
         title={getPostImageOriginalFilename(selectedImage?.url)}
