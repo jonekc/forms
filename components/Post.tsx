@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { PostWithAuthor } from '../types/post';
-import { fetcher, mutateResponse } from '../utils/client/api';
-import useSWR, { mutate } from 'swr';
+import { fetcher, useMutation } from '../utils/client/api';
+import useSWR from 'swr';
 import { Image as ImageType, User } from '@prisma/client';
 import { ConfirmationModal } from './ConfirmationModal';
 import { Input } from './form/Input';
@@ -13,6 +13,7 @@ import { Loader } from './Loader';
 import { PhotoModal } from './PhotoModal';
 import { getPostImageOriginalFilename } from '../utils/client/post';
 import { Image } from './Image';
+import { ToastContext } from '../providers/ToastProvider';
 
 const VISIBLE_IMAGES = 4;
 
@@ -33,25 +34,37 @@ const Post = ({ post }: PostProps) => {
   const confirmationModalRef = useRef<HTMLDialogElement>(null);
   const photoModalRef = useRef<HTMLDialogElement>(null);
 
+  const { showToast } = useContext(ToastContext);
+
   const { data: users } = useSWR<User[]>('/api/users', fetcher);
+  const { trigger: triggerPostMutation } = useMutation(`/api/posts/${post.id}`);
 
   const handleSave = async () => {
     setSaving(true);
-    await mutateResponse(`/api/posts/${post.id}`, 'PATCH', {
-      title,
-      authorId: authorId || null,
-      content,
-      published,
-    });
-    await mutate('/api/posts');
+    try {
+      await triggerPostMutation({
+        method: 'PATCH',
+        body: {
+          title,
+          authorId: authorId || null,
+          content,
+          published,
+        },
+      });
+    } catch (e) {
+      showToast("Couldn't edit a post", 'alert-error');
+    }
     setSaving(false);
     setEditing(false);
   };
 
   const handleDelete = async () => {
     setDeleting(true);
-    await mutateResponse(`/api/posts/${post.id}`, 'DELETE');
-    await mutate('/api/posts');
+    try {
+      await triggerPostMutation({ method: 'DELETE' });
+    } catch (e) {
+      showToast("Couldn't delete a post", 'alert-error');
+    }
     setEditing(false);
     setDeleting(false);
   };

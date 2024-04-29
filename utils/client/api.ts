@@ -1,6 +1,14 @@
+import { Fetcher } from 'swr';
 import { TOKEN_KEY, getUserToken } from './storage';
+import useSWRMutation, { MutationFetcher } from 'swr/mutation';
 
-const fetcher = async (url: string) => {
+type MutateResponse = MutationFetcher<
+  any,
+  string,
+  { method: string; body?: any }
+>;
+
+const fetcher: Fetcher<any, string> = async (url: string) => {
   const headers = {
     Authorization: `Bearer ${getUserToken()}`,
   };
@@ -16,13 +24,21 @@ const fetcher = async (url: string) => {
   return await res.json();
 };
 
-const mutateResponse = async (url: string, method: string, body?: any) => {
+const mutateResponse: MutateResponse = async (
+  url,
+  { arg: { method, body } },
+) => {
+  const token = getUserToken();
   const headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${getUserToken()}`,
+    ...(!(body instanceof FormData) && { 'Content-Type': 'application/json' }),
+    ...(token && { Authorization: `Bearer ${getUserToken()}` }),
   };
 
-  const res = await fetch(url, { method, headers, body: JSON.stringify(body) });
+  const res = await fetch(url, {
+    method,
+    headers,
+    body: body instanceof FormData ? body : JSON.stringify(body),
+  });
 
   if (!res.ok) {
     throw new Error('An error occurred while fetching the data');
@@ -36,4 +52,6 @@ const mutateResponse = async (url: string, method: string, body?: any) => {
   return json;
 };
 
-export { fetcher, mutateResponse };
+const useMutation = (url: string) => useSWRMutation(url, mutateResponse);
+
+export { fetcher, useMutation };

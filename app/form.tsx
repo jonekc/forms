@@ -1,10 +1,11 @@
 'use client';
 
-import React, { ChangeEvent, useState } from 'react';
-import { getUserToken } from '../utils/client/storage';
+import React, { ChangeEvent, useContext, useState } from 'react';
 import { Input } from '../components/form/Input';
 import { Checkbox } from '../components/form/Checkbox';
 import { Loader } from '../components/Loader';
+import { useMutation } from '../utils/client/api';
+import { ToastContext } from '../providers/ToastProvider';
 
 const Form: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -13,10 +14,13 @@ const Form: React.FC = () => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [isUpdating, setUpdating] = useState(false);
 
+  const { showToast } = useContext(ToastContext);
+
+  const { trigger: triggerCreatePost } = useMutation('/api/posts');
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setUpdating(true);
-    const token = getUserToken();
 
     const formData = new FormData();
     formData.append('title', title);
@@ -27,13 +31,11 @@ const Form: React.FC = () => {
       formData.append(`file${index + 1}`, file);
     });
 
-    await fetch('/api/posts', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
+    try {
+      await triggerCreatePost({ method: 'POST', body: formData });
+    } catch (error) {
+      showToast("Couldn't add a post", 'alert-error');
+    }
     setUpdating(false);
   };
 

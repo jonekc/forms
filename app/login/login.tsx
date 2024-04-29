@@ -7,6 +7,8 @@ import { AuthContext } from '../../providers/AuthProvider';
 import { Input } from '../../components/form/Input';
 import { ToastContext } from '../../providers/ToastProvider';
 import { Loader } from '../../components/Loader';
+import { useMutation } from '../../utils/client/api';
+import { AuthResponse } from '../../types/auth';
 
 const Login = () => {
   const [name, setName] = useState('');
@@ -18,25 +20,17 @@ const Login = () => {
 
   const router = useRouter();
 
+  const { trigger: triggerLogin } = useMutation('/api/auth');
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
-    fetch('/api/auth', {
+    triggerLogin({
       method: 'POST',
-      body: JSON.stringify({ name, password }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      body: { name, password },
     })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Authentication failed');
-        }
-      })
-      .then((data) => {
+      .then((data: AuthResponse) => {
         localStorage.setItem(TOKEN_KEY, data.token);
         setIsAuthorized(true);
         router.replace('/posts');
