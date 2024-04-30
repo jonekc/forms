@@ -37,7 +37,10 @@ const Post = ({ post }: PostProps) => {
   const { showToast } = useContext(ToastContext);
 
   const { data: users } = useSWR<User[]>('/api/users', fetcher);
-  const { trigger: triggerPostMutation } = useMutation(`/api/posts/${post.id}`);
+  const { trigger: triggerPostMutation } = useMutation(
+    `/api/posts/${post.id}`,
+    '/api/posts',
+  );
 
   const handleSave = async () => {
     setSaving(true);

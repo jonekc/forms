@@ -1,11 +1,17 @@
 import { Fetcher } from 'swr';
 import { TOKEN_KEY, getUserToken } from './storage';
 import useSWRMutation, { MutationFetcher } from 'swr/mutation';
+import { mutate } from 'swr';
+import axios, { AxiosProgressEvent } from 'axios';
 
 type MutateResponse = MutationFetcher<
   any,
   string,
-  { method: string; body?: any }
+  {
+    method: string;
+    body?: any;
+    onUploadProgress?: (progressEvent: AxiosProgressEvent) => void;
+  }
 >;
 
 const fetcher: Fetcher<any, string> = async (url: string) => {
@@ -13,20 +19,25 @@ const fetcher: Fetcher<any, string> = async (url: string) => {
     Authorization: `Bearer ${getUserToken()}`,
   };
 
-  const res = await fetch(url, { headers });
-  if (res.status === 401) {
-    localStorage.removeItem(TOKEN_KEY);
-    window.location.href = '/login';
-  }
-  if (!res.ok) {
+  try {
+    const response = await axios.get(url, { headers });
+    if (response.status === 401) {
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.href = '/login';
+    }
+    if (response.status !== 200) {
+      throw new Error('An error occurred while fetching the data');
+    }
+    return response.data;
+  } catch (error) {
+    console.log(error);
     throw new Error('An error occurred while fetching the data');
   }
-  return await res.json();
 };
 
 const mutateResponse: MutateResponse = async (
   url,
-  { arg: { method, body } },
+  { arg: { method, body, onUploadProgress } },
 ) => {
   const token = getUserToken();
   const headers = {
@@ -34,24 +45,37 @@ const mutateResponse: MutateResponse = async (
     ...(token && { Authorization: `Bearer ${getUserToken()}` }),
   };
 
-  const res = await fetch(url, {
-    method,
-    headers,
-    body: body instanceof FormData ? body : JSON.stringify(body),
-  });
+  try {
+    const response = await axios({
+      method,
+      url,
+      headers,
+      data: body instanceof FormData ? body : JSON.stringify(body),
+      onUploadProgress,
+    });
 
-  if (!res.ok) {
+    if (response.status >= 400) {
+      throw new Error('An error occurred while fetching the data');
+    }
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
     throw new Error('An error occurred while fetching the data');
   }
-  let json: any = null;
-  try {
-    json = await res.json();
-  } catch (e) {
-    console.log(e);
-  }
-  return json;
 };
 
-const useMutation = (url: string) => useSWRMutation(url, mutateResponse);
+const useMutation = (url: string, invalidateKey?: string) =>
+  useSWRMutation(
+    url,
+    mutateResponse,
+    invalidateKey
+      ? {
+          onSuccess: () => {
+            mutate(invalidateKey);
+          },
+        }
+      : undefined,
+  );
 
 export { fetcher, useMutation };

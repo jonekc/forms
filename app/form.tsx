@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ChangeEvent, useContext, useState } from 'react';
+import React, { CSSProperties, ChangeEvent, useContext, useState } from 'react';
 import { Input } from '../components/form/Input';
 import { Checkbox } from '../components/form/Checkbox';
 import { Loader } from '../components/Loader';
@@ -12,11 +12,20 @@ const Form: React.FC = () => {
   const [content, setContent] = useState('');
   const [published, setPublished] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
+
   const [isUpdating, setUpdating] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const { showToast } = useContext(ToastContext);
 
   const { trigger: triggerCreatePost } = useMutation('/api/posts');
+
+  const resetForm = () => {
+    setTitle('');
+    setContent('');
+    setPublished(false);
+    setFiles(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,10 +41,22 @@ const Form: React.FC = () => {
     });
 
     try {
-      await triggerCreatePost({ method: 'POST', body: formData });
+      await triggerCreatePost({
+        method: 'POST',
+        body: formData,
+        onUploadProgress: (progressEvent) => {
+          const progress = progressEvent.progress;
+          if (progress) {
+            setUploadProgress(Math.round(progress * 100));
+          }
+        },
+      });
+      showToast('Post successfully created', 'alert-success');
+      resetForm();
     } catch (error) {
       showToast("Couldn't add a post", 'alert-error');
     }
+    setUploadProgress(0);
     setUpdating(false);
   };
 
@@ -94,6 +115,20 @@ const Form: React.FC = () => {
             <span>{file.name}</span>
           </div>
         ))}
+        {uploadProgress > 0 && (
+          <div
+            className="radial-progress mt-2"
+            style={
+              {
+                '--value': uploadProgress,
+                '--size': '3rem',
+              } as CSSProperties
+            }
+            role="progressbar"
+          >
+            {uploadProgress}%
+          </div>
+        )}
         <div className="mt-3">
           <button
             className="btn btn-sm btn-primary"

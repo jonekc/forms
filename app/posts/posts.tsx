@@ -12,6 +12,7 @@ const Posts: React.FC = () => {
     data: postsResponse,
     error,
     isLoading,
+    isValidating,
   } = useSWR<PostWithAuthor[]>('/api/posts', fetcher);
 
   const posts = !error ? postsResponse : undefined;
@@ -19,7 +20,7 @@ const Posts: React.FC = () => {
   return (
     <>
       <h1 className="font-bold text-2xl my-4">Posts</h1>
-      {isLoading ? (
+      {isLoading || isValidating ? (
         <div className="flex justify-center items-center h-[75vh]">
           <Loader size="loading-md" />
         </div>
