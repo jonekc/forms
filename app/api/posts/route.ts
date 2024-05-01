@@ -5,17 +5,36 @@ import {
   getDecodedToken,
   getSupabaseImageUrl,
 } from '../../../utils/api/common';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../../../utils/api/supabase';
 
 const GET = async () => {
   // Check if user is authenticated using JWT
   const { isAuthorized, isAdmin } = await checkAuth();
 
   if (isAuthorized && isAdmin) {
-    const posts = await prisma.post.findMany({
+    let posts = await prisma.post.findMany({
       orderBy: { createdAt: 'asc' },
       include: { author: true, images: true },
     });
+    posts = await Promise.all(
+      posts.map(async (post) => {
+        const updatedImages = await Promise.all(
+          post.images.map(async (image) => {
+            const { data } = await supabase.storage
+              .from(process.env.SUPABASE_BUCKET || '')
+              .createSignedUrl(image.url.split('/').pop() || '', 60);
+            return {
+              ...image,
+              url: data?.signedUrl || '',
+            };
+          }),
+        );
+        return {
+          ...post,
+          images: updatedImages,
+        };
+      }),
+    );
     return NextResponse.json(posts, { status: 200 });
   } else {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -35,11 +54,6 @@ const POST = async (req: NextRequest) => {
     return acc;
   }, []);
   const filenames: string[] = [];
-
-  const supabase = createClient(
-    process.env.SUPABASE_PROJECT_URL || '',
-    process.env.SUPABASE_API_KEY || '',
-  );
 
   try {
     await Promise.all(

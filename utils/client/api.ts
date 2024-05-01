@@ -21,17 +21,15 @@ const fetcher: Fetcher<any, string> = async (url: string) => {
 
   try {
     const response = await axios.get(url, { headers });
-    if (response.status === 401) {
-      localStorage.removeItem(TOKEN_KEY);
-      window.location.href = '/login';
-    }
-    if (response.status !== 200) {
-      throw new Error('An error occurred while fetching the data');
-    }
     return response.data;
   } catch (error) {
-    console.log(error);
-    throw new Error('An error occurred while fetching the data');
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.href = '/login';
+    } else {
+      console.log(error);
+      throw new Error('An error occurred while fetching the data');
+    }
   }
 };
 

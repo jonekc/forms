@@ -35,6 +35,9 @@ const Image = ({ src, alt, className, width, height, onClick }: ImageProps) => {
         onLoad={() => {
           setLoading(false);
         }}
+        onError={() => {
+          setLoading(false);
+        }}
         {...((!width || !height) && { sizes: '100vw' })}
       />
     </button>

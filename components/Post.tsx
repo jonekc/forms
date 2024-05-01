@@ -181,6 +181,7 @@ const Post = ({ post }: PostProps) => {
               <Image
                 key={image.id}
                 src={image.url}
+                alt={getPostImageOriginalFilename(image.url)}
                 width={160}
                 height={90}
                 onClick={() => {

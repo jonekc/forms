@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Next.js: debug frontend",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Next: debug full stack",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/next",
+      "runtimeVersion": "21.7.1"
+    }
+  ]
+}
