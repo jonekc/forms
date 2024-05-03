@@ -1,5 +1,7 @@
+type LoaderSize = 'loading-xs' | 'loading-sm' | 'loading-md' | 'loading-lg';
+
 type LoaderProps = {
-  size?: 'loading-xs' | 'loading-sm' | 'loading-md' | 'loading-lg';
+  size?: LoaderSize;
 };
 
 const Loader = ({ size }: LoaderProps) => (
@@ -7,3 +9,4 @@ const Loader = ({ size }: LoaderProps) => (
 );
 
 export { Loader };
+export type { LoaderSize };

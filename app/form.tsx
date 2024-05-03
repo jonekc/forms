@@ -12,6 +12,7 @@ const Form: React.FC = () => {
   const [content, setContent] = useState('');
   const [published, setPublished] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
+  const [filesInputKey, setFilesInputKey] = useState('');
 
   const [isUpdating, setUpdating] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -25,6 +26,7 @@ const Form: React.FC = () => {
     setContent('');
     setPublished(false);
     setFiles(null);
+    setFilesInputKey(Date.now().toString());
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -103,6 +105,7 @@ const Form: React.FC = () => {
             multiple
             accept="image/*"
             onChange={handleFilesChange}
+            key={filesInputKey}
           />
         </div>
         {[...(files || [])].map((file, index) => (
@@ -115,7 +118,7 @@ const Form: React.FC = () => {
             <span>{file.name}</span>
           </div>
         ))}
-        {uploadProgress > 0 && (
+        {uploadProgress > 0 && uploadProgress < 100 && (
           <div
             className="radial-progress mt-2"
             style={

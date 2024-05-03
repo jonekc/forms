@@ -29,10 +29,14 @@ const Post = ({ post }: PostProps) => {
   const [published, setPublished] = useState(post.published || false);
   const [isSaving, setSaving] = useState(false);
   const [isDeleting, setDeleting] = useState(false);
+  const [isDeletingImage, setDeletingImage] = useState(false);
   const [selectedImage, setSelectedImage] = useState<ImageType>();
+
+  const selectedImageTitle = getPostImageOriginalFilename(selectedImage?.url);
 
   const confirmationModalRef = useRef<HTMLDialogElement>(null);
   const photoModalRef = useRef<HTMLDialogElement>(null);
+  const imageDeleteModalRef = useRef<HTMLDialogElement>(null);
 
   const { showToast } = useContext(ToastContext);
 
@@ -41,18 +45,23 @@ const Post = ({ post }: PostProps) => {
     `/api/posts/${post.id}`,
     '/api/posts',
   );
+  const { trigger: deleteImage } = useMutation(
+    `/api/images/${selectedImage?.id}`,
+    '/api/posts',
+  );
 
   const handleSave = async () => {
     setSaving(true);
     try {
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('authorId', authorId || '');
+      formData.append('content', content);
+      formData.append('published', String(published));
+
       await triggerPostMutation({
         method: 'PATCH',
-        body: {
-          title,
-          authorId: authorId || null,
-          content,
-          published,
-        },
+        body: formData,
       });
     } catch (e) {
       showToast("Couldn't edit a post", 'alert-error');
@@ -70,6 +79,7 @@ const Post = ({ post }: PostProps) => {
     }
     setEditing(false);
     setDeleting(false);
+    confirmationModalRef.current?.close();
   };
 
   const handlePrev = () => {
@@ -87,6 +97,18 @@ const Post = ({ post }: PostProps) => {
         setSelectedImage(post.images[index + 1]);
       }
     }
+  };
+
+  const handleImageDelete = async () => {
+    setDeletingImage(true);
+    try {
+      await deleteImage({ method: 'DELETE' });
+    } catch (e) {
+      showToast("Couldn't delete an image", 'alert-error');
+    }
+    setDeletingImage(false);
+    photoModalRef.current?.close();
+    imageDeleteModalRef.current?.close();
   };
 
   return (
@@ -209,17 +231,24 @@ const Post = ({ post }: PostProps) => {
         title={`Are you sure you want to delete "${post.title}" post?`}
         message="This action cannot be undone."
         buttonLoading={isDeleting}
-        onConfirm={async () => {
-          await handleDelete();
-          confirmationModalRef.current?.close();
-        }}
+        onConfirm={handleDelete}
       />
       <PhotoModal
         ref={photoModalRef}
-        title={getPostImageOriginalFilename(selectedImage?.url)}
+        title={selectedImageTitle}
         src={selectedImage?.url || ''}
         handlePrev={handlePrev}
         handleNext={handleNext}
+        handleDelete={() => {
+          imageDeleteModalRef.current?.showModal();
+        }}
+      />
+      <ConfirmationModal
+        ref={imageDeleteModalRef}
+        title={`Delete ${selectedImageTitle} image?`}
+        message="This action cannot be undone."
+        onConfirm={handleImageDelete}
+        buttonLoading={isDeletingImage}
       />
     </div>
   );

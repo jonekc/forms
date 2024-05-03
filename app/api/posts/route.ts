@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../lib/prisma';
-import { checkAuth } from '../../../utils/api/auth';
-import {
-  getDecodedToken,
-  getSupabaseImageUrl,
-} from '../../../utils/api/common';
-import { supabase } from '../../../utils/api/supabase';
+import prisma from 'lib/prisma';
+import { checkAuth } from 'utils/api/auth';
+import { getDecodedToken } from 'utils/api/common';
+import { supabase } from 'utils/api/supabase';
 
 const GET = async () => {
   // Check if user is authenticated using JWT
@@ -58,7 +55,7 @@ const POST = async (req: NextRequest) => {
   try {
     await Promise.all(
       files.map(async (file: File) => {
-        const uniqueId = Date.now().toString();
+        const uniqueId = crypto.randomUUID().split('-').pop();
         const { data, error } = await supabase.storage
           .from(process.env.SUPABASE_BUCKET || '')
           .upload(`${uniqueId}-${file.name}`, file);
@@ -88,7 +85,7 @@ const POST = async (req: NextRequest) => {
         content: content || '',
         published,
         images: {
-          create: filenames.map((url) => ({ url: getSupabaseImageUrl(url) })),
+          create: filenames.map((url) => ({ url })),
         },
         ...(userId && { author: { connect: { id: userId } } }),
       },

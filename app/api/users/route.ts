@@ -1,5 +1,5 @@
-import prisma from '../../../lib/prisma';
-import { checkAuth } from '../../../utils/api/auth';
+import prisma from 'lib/prisma';
+import { checkAuth } from 'utils/api/auth';
 import { NextResponse } from 'next/server';
 
 const GET = async () => {

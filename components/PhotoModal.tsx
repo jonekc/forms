@@ -8,16 +8,22 @@ type PhotoModalProps = {
   src: string;
   handlePrev: () => void;
   handleNext: () => void;
+  handleDelete: () => void;
 };
 
 const PhotoModal = forwardRef<HTMLDialogElement, PhotoModalProps>(
-  ({ title, src, handlePrev, handleNext }, ref) => (
+  ({ title, src, handlePrev, handleNext, handleDelete }, ref) => (
     <dialog className="modal" ref={ref}>
       <div className="modal-box max-w-6xl">
         <form method="dialog">
           <CloseButton className="absolute right-2 top-2" />
         </form>
-        <h3 className="font-bold text-lg mr-3 mb-2">{title}</h3>
+        <div className="flex items-center gap-2 mr-3 mb-2">
+          <h3 className="font-bold text-lg m-0">{title}</h3>
+          <button className="btn btn-sm btn-error" onClick={handleDelete}>
+            Delete
+          </button>
+        </div>
         <div className="flex items-center gap-2">
           <button
             className="btn btn-sm btn-circle btn-ghost"

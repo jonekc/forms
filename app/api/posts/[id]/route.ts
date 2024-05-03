@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Post } from '@prisma/client';
 import prisma from '../../../../lib/prisma';
 import { checkAuth } from '../../../../utils/api/auth';
+import { supabase } from 'utils/api/supabase';
 
 const PATCH = async (
   req: NextRequest,
   { params: { id } }: { params: { id: string } },
 ) => {
-  const body = await req.json();
-  const { title, content, published, authorId } = body as Post;
+  const formData = await req.formData();
+  const body = Object.fromEntries(formData);
+  const title = body.title?.toString();
+  const content = body.content?.toString();
+  const category = body.category?.toString() || null;
+  const published = body.published === 'true';
+  const authorId = body.authorId?.toString() || null;
   const { isAuthorized, isAdmin } = await checkAuth();
 
   if (isAuthorized && isAdmin) {
@@ -20,7 +25,7 @@ const PATCH = async (
     if (post) {
       const result = await prisma.post.update({
         where: { id },
-        data: { title, content, published, authorId },
+        data: { title, content, published, category, authorId },
         include: { author: true },
       });
       return NextResponse.json(result, { status: 200 });
@@ -42,9 +47,17 @@ const DELETE = async (
     if (typeof id !== 'string') {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
-    const post = await prisma.post.findUnique({ where: { id } });
+    const post = await prisma.post.findUnique({
+      where: { id },
+      include: { images: true },
+    });
 
     if (post) {
+      if (post.images.length > 0) {
+        await supabase.storage
+          .from(process.env.SUPABASE_BUCKET || '')
+          .remove(post.images.map((image) => image.url.split('/').pop() || ''));
+      }
       await prisma.post.delete({
         where: { id },
       });

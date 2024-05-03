@@ -6,6 +6,7 @@ import Post from '../../components/Post';
 import { fetcher } from '../../utils/client/api';
 import { PostWithAuthor } from '../../types/post';
 import { Loader } from '../../components/Loader';
+import { OverlayLoader } from 'components/OverlayLoader';
 
 const Posts: React.FC = () => {
   const {
@@ -20,14 +21,16 @@ const Posts: React.FC = () => {
   return (
     <>
       <h1 className="font-bold text-2xl my-4">Posts</h1>
-      {isLoading || isValidating ? (
+      {isLoading ? (
         <div className="flex justify-center items-center h-[75vh]">
           <Loader size="loading-md" />
         </div>
       ) : (
-        <div className="grid gap-3">
-          {posts?.map((post) => <Post key={post.id} post={post} />)}
-        </div>
+        <OverlayLoader isLoading={isValidating}>
+          <div className="grid gap-3">
+            {posts?.map((post) => <Post key={post.id} post={post} />)}{' '}
+          </div>
+        </OverlayLoader>
       )}
     </>
   );

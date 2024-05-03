@@ -13,7 +13,4 @@ const getDecodedToken = () => {
   return decodedToken;
 };
 
-const getSupabaseImageUrl = (filename: string) =>
-  `${process.env.SUPABASE_PROJECT_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/${filename}`;
-
-export { getDecodedToken, getSupabaseImageUrl };
+export { getDecodedToken };

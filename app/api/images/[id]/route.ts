@@ -52,22 +52,13 @@ const DELETE = async (
         process.env.SUPABASE_API_KEY || '',
       );
       const filename = image.url.split('/').pop() || '';
-      const data = supabase.storage
+      await supabase.storage
         .from(process.env.SUPABASE_BUCKET || '')
-        .getPublicUrl(filename);
-      // const { error } = await supabase.storage
-      //
-      //   .remove([data?.[0].id || '']);
-      // await prisma.image.delete({
-      //   where: { id },
-      // });
-      // if (error) {
-      //   return NextResponse.json(
-      //     { error: 'Failed to delete image' },
-      //     { status: 500 },
-      //   );
-      // }
-      console.log(data);
+        .remove([filename]);
+      await prisma.image.delete({
+        where: { id },
+      });
+
       return new Response(undefined, { status: 204 });
     } else {
       return NextResponse.json({ error: 'Image not found' }, { status: 404 });
