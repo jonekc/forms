@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'lib/prisma';
 import { checkAuth } from 'utils/api/auth';
 import { getDecodedToken } from 'utils/api/common';
-import { supabase } from 'utils/api/supabase';
+import { getFilename, supabase, uploadImages } from 'utils/api/supabase';
 
 const GET = async () => {
   // Check if user is authenticated using JWT
@@ -11,7 +11,18 @@ const GET = async () => {
   if (isAuthorized && isAdmin) {
     let posts = await prisma.post.findMany({
       orderBy: { createdAt: 'asc' },
-      include: { author: true, images: true },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        images: true,
+      },
     });
     posts = await Promise.all(
       posts.map(async (post) => {
@@ -19,7 +30,7 @@ const GET = async () => {
           post.images.map(async (image) => {
             const { data } = await supabase.storage
               .from(process.env.SUPABASE_BUCKET || '')
-              .createSignedUrl(image.url.split('/').pop() || '', 60);
+              .createSignedUrl(getFilename(image.url), 60);
             return {
               ...image,
               url: data?.signedUrl || '',
@@ -50,26 +61,11 @@ const POST = async (req: NextRequest) => {
     }
     return acc;
   }, []);
-  const filenames: string[] = [];
 
-  try {
-    await Promise.all(
-      files.map(async (file: File) => {
-        const uniqueId = crypto.randomUUID().split('-').pop();
-        const { data, error } = await supabase.storage
-          .from(process.env.SUPABASE_BUCKET || '')
-          .upload(`${uniqueId}-${file.name}`, file);
-
-        if (data?.path && !error) {
-          filenames.push(data.path);
-        } else {
-          throw new Error('Failed to upload files');
-        }
-      }),
-    );
-  } catch (err) {
+  const filenames = await uploadImages(files);
+  if (!filenames) {
     return NextResponse.json(
-      { error: 'Failed to upload files' },
+      { error: 'Failed to upload images' },
       { status: 500 },
     );
   }
@@ -89,7 +85,18 @@ const POST = async (req: NextRequest) => {
         },
         ...(userId && { author: { connect: { id: userId } } }),
       },
-      include: { author: true, images: true },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        images: true,
+      },
     });
     return NextResponse.json(result, { status: 201 });
   } else {

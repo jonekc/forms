@@ -6,7 +6,16 @@ const GET = async () => {
   const { isAuthorized, isAdmin } = await checkAuth();
 
   if (isAuthorized && isAdmin) {
-    const users = await prisma.user.findMany({ orderBy: { name: 'asc' } });
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { name: 'asc' },
+    });
     return NextResponse.json(users, { status: 200 });
   } else {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

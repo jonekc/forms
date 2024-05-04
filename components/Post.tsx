@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { ChangeEvent, useContext, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { PostWithAuthor } from '../types/post';
 import { fetcher, useMutation } from '../utils/client/api';
@@ -31,6 +31,7 @@ const Post = ({ post }: PostProps) => {
   const [isDeleting, setDeleting] = useState(false);
   const [isDeletingImage, setDeletingImage] = useState(false);
   const [selectedImage, setSelectedImage] = useState<ImageType>();
+  const [, /* files */ setFiles] = useState<FileList | null>(null);
 
   const selectedImageTitle = getPostImageOriginalFilename(selectedImage?.url);
 
@@ -58,6 +59,8 @@ const Post = ({ post }: PostProps) => {
       formData.append('authorId', authorId || '');
       formData.append('content', content);
       formData.append('published', String(published));
+      formData.append(`file-${post.images[0].id}`, '');
+      formData.append(`file-${post.images[2].id}`, '');
 
       await triggerPostMutation({
         method: 'PATCH',
@@ -111,6 +114,13 @@ const Post = ({ post }: PostProps) => {
     imageDeleteModalRef.current?.close();
   };
 
+  const handleFilesChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const fileList = e.target.files as FileList;
+      setFiles(fileList);
+    }
+  };
+
   return (
     <div className="card glass p-4">
       {editing ? (
@@ -140,6 +150,14 @@ const Post = ({ post }: PostProps) => {
             label="Published"
             checked={published}
             onChange={(e) => setPublished(e.target.checked)}
+          />
+          <input
+            type="file"
+            id="images"
+            name="images"
+            multiple
+            accept="image/*"
+            onChange={handleFilesChange}
           />
           <div className="flex gap-2">
             <button
