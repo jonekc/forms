@@ -2,7 +2,7 @@
 
 import React from 'react';
 import useSWR from 'swr';
-import Post from '../../components/Post';
+import Post from '../../components/post/Post';
 import { fetcher } from '../../utils/client/api';
 import { PostWithAuthor } from '../../types/post';
 import { Loader } from '../../components/Loader';
