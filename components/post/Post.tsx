@@ -25,7 +25,6 @@ const Post = ({ post }: PostProps) => {
 
   const confirmationModalRef = useRef<HTMLDialogElement>(null);
   const photoModalRef = useRef<HTMLDialogElement>(null);
-  const imageDeleteModalRef = useRef<HTMLDialogElement>(null);
 
   const { showToast } = useContext(ToastContext);
 
@@ -139,9 +138,6 @@ const Post = ({ post }: PostProps) => {
         src={selectedImage?.url || ''}
         handlePrev={handlePrev}
         handleNext={handleNext}
-        handleDelete={() => {
-          imageDeleteModalRef.current?.showModal();
-        }}
       />
     </div>
   );

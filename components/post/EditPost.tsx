@@ -1,4 +1,5 @@
 import React, {
+  CSSProperties,
   ChangeEvent,
   Dispatch,
   SetStateAction,
@@ -20,6 +21,7 @@ import { getPostImageOriginalFilename } from '../../utils/client/post';
 import { ToastContext } from '../../providers/ToastProvider';
 import { Image } from 'components/Image';
 import { EditImage } from './EditImage';
+import { Progress } from 'components/Progress';
 
 type SelectedImage = {
   url: string;
@@ -37,6 +39,8 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
   const [content, setContent] = useState(post.content || '');
   const [published, setPublished] = useState(post.published || false);
   const [isSaving, setSaving] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
   const [selectedImage, setSelectedImage] = useState<SelectedImage>();
   const [existingImages, setExistingImages] = useState<
     (ImageType & {
@@ -65,7 +69,6 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
   ];
 
   const photoModalRef = useRef<HTMLDialogElement>(null);
-  const imageDeleteModalRef = useRef<HTMLDialogElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { showToast } = useContext(ToastContext);
@@ -94,6 +97,12 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
       await triggerPostMutation({
         method: 'PATCH',
         body: formData,
+        onUploadProgress: (progressEvent) => {
+          const progress = progressEvent.progress;
+          if (progress) {
+            setUploadProgress(Math.round(progress * 100));
+          }
+        },
       });
     } catch (e) {
       showToast("Couldn't edit a post", 'alert-error');
@@ -261,6 +270,19 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
           onChange={handleFilesChange}
           className="hidden"
         />
+        {uploadProgress > 0 && uploadProgress < 100 && (
+          <div
+            className="transform"
+            style={
+              {
+                '--tw-translate-x': '8px',
+                '--tw-translate-y': '8px',
+              } as CSSProperties
+            }
+          >
+            <Progress uploadProgress={uploadProgress} />
+          </div>
+        )}
       </div>
       <PhotoModal
         ref={photoModalRef}
@@ -268,9 +290,6 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
         src={selectedImage?.url || ''}
         handlePrev={handlePrev}
         handleNext={handleNext}
-        handleDelete={() => {
-          imageDeleteModalRef.current?.showModal();
-        }}
       />
     </div>
   );

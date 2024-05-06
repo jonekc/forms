@@ -30,7 +30,7 @@ const GET = async () => {
           post.images.map(async (image) => {
             const { data } = await supabase.storage
               .from(process.env.SUPABASE_BUCKET || '')
-              .createSignedUrl(getFilename(image.url), 60);
+              .createSignedUrl(getFilename(image.url), 60 * 10);
             return {
               ...image,
               url: data?.signedUrl || '',
