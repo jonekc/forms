@@ -1,39 +1,79 @@
+import { Fetcher } from 'swr';
 import { TOKEN_KEY, getUserToken } from './storage';
+import useSWRMutation, { MutationFetcher } from 'swr/mutation';
+import { mutate } from 'swr';
+import axios, { AxiosProgressEvent } from 'axios';
 
-const fetcher = async (url: string) => {
+type MutateResponse = MutationFetcher<
+  any,
+  string,
+  {
+    method: string;
+    body?: any;
+    onUploadProgress?: (progressEvent: AxiosProgressEvent) => void;
+  }
+>;
+
+const fetcher: Fetcher<any, string> = async (url: string) => {
   const headers = {
     Authorization: `Bearer ${getUserToken()}`,
   };
 
-  const res = await fetch(url, { headers });
-  if (res.status === 401) {
-    localStorage.removeItem(TOKEN_KEY);
-    window.location.href = '/login';
-  }
-  if (!res.ok) {
-    throw new Error('An error occurred while fetching the data');
-  }
-  return await res.json();
-};
-
-const mutateResponse = async (url: string, method: string, body?: any) => {
-  const headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${getUserToken()}`,
-  };
-
-  const res = await fetch(url, { method, headers, body: JSON.stringify(body) });
-
-  if (!res.ok) {
-    throw new Error('An error occurred while fetching the data');
-  }
-  let json: any = null;
   try {
-    json = await res.json();
-  } catch (e) {
-    console.log(e);
+    const response = await axios.get(url, { headers });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.href = '/login';
+    } else {
+      console.log(error);
+      throw new Error('An error occurred while fetching the data');
+    }
   }
-  return json;
 };
 
-export { fetcher, mutateResponse };
+const mutateResponse: MutateResponse = async (
+  url,
+  { arg: { method, body, onUploadProgress } },
+) => {
+  const token = getUserToken();
+  const headers = {
+    ...(!(body instanceof FormData) && { 'Content-Type': 'application/json' }),
+    ...(token && { Authorization: `Bearer ${getUserToken()}` }),
+  };
+
+  try {
+    const response = await axios({
+      method,
+      url,
+      headers,
+      data: body instanceof FormData ? body : JSON.stringify(body),
+      onUploadProgress,
+    });
+
+    if (response.status >= 400) {
+      throw new Error('An error occurred while fetching the data');
+    }
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw new Error('An error occurred while fetching the data');
+  }
+};
+
+const useMutation = (url: string, invalidateKey?: string) =>
+  useSWRMutation(
+    url,
+    mutateResponse,
+    invalidateKey
+      ? {
+          onSuccess: () => {
+            mutate(invalidateKey);
+          },
+        }
+      : undefined,
+  );
+
+export { fetcher, useMutation };

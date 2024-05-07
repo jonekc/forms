@@ -1,22 +1,38 @@
 'use client';
 
-import React, { ChangeEvent, useState } from 'react';
-import { getUserToken } from '../utils/client/storage';
+import React, { ChangeEvent, useContext, useState } from 'react';
 import { Input } from '../components/form/Input';
 import { Checkbox } from '../components/form/Checkbox';
 import { Loader } from '../components/Loader';
+import { useMutation } from '../utils/client/api';
+import { ToastContext } from '../providers/ToastProvider';
+import { Progress } from 'components/Progress';
 
 const Form: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [published, setPublished] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
+  const [filesInputKey, setFilesInputKey] = useState('');
+
   const [isUpdating, setUpdating] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const { showToast } = useContext(ToastContext);
+
+  const { trigger: triggerCreatePost } = useMutation('/api/posts');
+
+  const resetForm = () => {
+    setTitle('');
+    setContent('');
+    setPublished(false);
+    setFiles(null);
+    setFilesInputKey(Date.now().toString());
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setUpdating(true);
-    const token = getUserToken();
 
     const formData = new FormData();
     formData.append('title', title);
@@ -27,13 +43,23 @@ const Form: React.FC = () => {
       formData.append(`file${index + 1}`, file);
     });
 
-    await fetch('/api/posts', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
+    try {
+      await triggerCreatePost({
+        method: 'POST',
+        body: formData,
+        onUploadProgress: (progressEvent) => {
+          const progress = progressEvent.progress;
+          if (progress) {
+            setUploadProgress(Math.round(progress * 100));
+          }
+        },
+      });
+      showToast('Post successfully created', 'alert-success');
+      resetForm();
+    } catch (error) {
+      showToast("Couldn't add a post", 'alert-error');
+    }
+    setUploadProgress(0);
     setUpdating(false);
   };
 
@@ -80,6 +106,7 @@ const Form: React.FC = () => {
             multiple
             accept="image/*"
             onChange={handleFilesChange}
+            key={filesInputKey}
           />
         </div>
         {[...(files || [])].map((file, index) => (
@@ -92,6 +119,9 @@ const Form: React.FC = () => {
             <span>{file.name}</span>
           </div>
         ))}
+        {uploadProgress > 0 && uploadProgress < 100 && (
+          <Progress uploadProgress={uploadProgress} />
+        )}
         <div className="mt-3">
           <button
             className="btn btn-sm btn-primary"

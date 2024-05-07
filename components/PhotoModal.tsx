@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
-import Image from 'next/image';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { CloseButton } from './CloseButton';
+import { Image } from './Image';
 
 type PhotoModalProps = {
   title: string;
@@ -17,7 +17,9 @@ const PhotoModal = forwardRef<HTMLDialogElement, PhotoModalProps>(
         <form method="dialog">
           <CloseButton className="absolute right-2 top-2" />
         </form>
-        <h3 className="font-bold text-lg mr-3">{title}</h3>
+        <div className="flex items-center gap-2 mr-3 mb-2">
+          <h3 className="font-bold text-lg m-0">{title}</h3>
+        </div>
         <div className="flex items-center gap-2">
           <button
             className="btn btn-sm btn-circle btn-ghost"
@@ -25,9 +27,13 @@ const PhotoModal = forwardRef<HTMLDialogElement, PhotoModalProps>(
           >
             <ChevronLeftIcon className="h-6 w-6" />
           </button>
-          <div className="w-full relative pt-[56.25%]">
+          <div className="d-flex justify-center w-full">
             {src && (
-              <Image src={src} alt="" fill style={{ objectFit: 'contain' }} />
+              <Image
+                src={src}
+                alt={title}
+                className="w-full h-auto max-h-[70vh]"
+              />
             )}
           </div>
           <button
