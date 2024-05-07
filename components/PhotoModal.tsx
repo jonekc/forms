@@ -33,6 +33,7 @@ const PhotoModal = forwardRef<HTMLDialogElement, PhotoModalProps>(
                 src={src}
                 alt={title}
                 className="w-full h-auto max-h-[70vh]"
+                loadingHeight="min-h-[60vh]"
               />
             )}
           </div>

@@ -9,14 +9,23 @@ type ImageProps = {
   width?: number | `${number}`;
   height?: number | `${number}`;
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  loadingHeight?: string;
 };
 
-const Image = ({ src, alt, className, width, height, onClick }: ImageProps) => {
+const Image = ({
+  src,
+  alt,
+  className,
+  width,
+  height,
+  onClick,
+  loadingHeight,
+}: ImageProps) => {
   const [isLoading, setLoading] = useState(true);
 
   return (
     <button
-      className={`flex justify-center items-center relative m-auto${isLoading ? ' min-h-[60vh]' : ''}`}
+      className={`flex justify-center items-center relative m-auto${isLoading ? ` ${loadingHeight}` : ''}`}
       onClick={onClick}
       {...(!onClick && { tabIndex: -1 })}
       {...(width && { style: { width } })}
