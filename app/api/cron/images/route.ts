@@ -8,7 +8,7 @@ const GET = async (req: NextRequest) => {
 
   const headersList = headers();
   const token = headersList.get('authorization')?.replace('Bearer ', '');
-  if (token === process.env.CRON_SECRET) {
+  if (token && token === process.env.CRON_SECRET) {
     const { data } = await supabase.storage
       .from(process.env.SUPABASE_BUCKET || '')
       .list();
