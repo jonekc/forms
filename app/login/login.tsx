@@ -64,6 +64,9 @@ const Login = () => {
           }}
           placeholder="Password"
         />
+        <a href="/reset-password" className="link link-primary my-1 text-sm">
+          Forgot your password?
+        </a>
         <button
           type="submit"
           className="btn btn-sm btn-primary"
