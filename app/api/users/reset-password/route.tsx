@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { User } from '@prisma/client';
 import { Resend } from 'resend';
 import ResetPassword from 'app/emails/reset-password';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import { headers } from 'next/headers';
 
 const POST = async (req: NextRequest) => {
   const body = await req.json();
@@ -21,12 +24,37 @@ const POST = async (req: NextRequest) => {
       orderBy: { name: 'asc' },
     });
     if (user?.email) {
+      let resetToken = crypto.randomBytes(32).toString('hex');
+      let resetPassword = await bcrypt.hash(resetToken, 10);
+
+      const resetPasswordExpiresAt = new Date();
+      resetPasswordExpiresAt.setHours(resetPasswordExpiresAt.getHours() + 1);
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          resetPassword,
+          resetPasswordExpiresAt,
+        },
+      });
+
+      const searchParams = new URLSearchParams({
+        email: user.email,
+        token: resetToken,
+      });
+      const headersList = headers();
+      const origin = headersList.get('origin') || '';
       const emailService = new Resend(process.env.RESEND_API_KEY);
       await emailService.emails.send({
         from: 'onboarding@resend.dev',
         to: user.email,
         subject: 'Password reset in the Forms app',
-        react: <ResetPassword />,
+        react: (
+          <ResetPassword
+            username={user.name || ''}
+            link={`${origin}/set-password?${searchParams.toString()}`}
+          />
+        ),
       });
       return new Response(undefined, { status: 200 });
     } else {

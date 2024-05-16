@@ -45,7 +45,10 @@ const GET = async () => {
     );
     return NextResponse.json(posts, { status: 200 });
   } else {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: isAuthorized ? 403 : 401 },
+    );
   }
 };
 

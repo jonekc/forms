@@ -12,12 +12,14 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 
-const ResetPassword = () => {
+type ResetPasswordProps = { username: string; link: string };
+
+const ResetPassword = ({ username, link }: ResetPasswordProps) => {
   return (
     <Tailwind
       config={{
         theme: {
-          extend: {},
+          extend: { colors: { primary: '#4400f6' } },
         },
         plugins: [require('daisyui')],
       }}
@@ -37,7 +39,7 @@ const ResetPassword = () => {
               />
             </Section> */}
             <Text className="text-black text-[14px] leading-[24px]">
-              Hi <strong>username</strong>,
+              Hi <strong>{username}</strong>,
             </Text>
             <Text className="text-black text-[14px] leading-[24px]">
               Someone recently requested a password reset for your Forms
@@ -46,24 +48,24 @@ const ResetPassword = () => {
             <Section className="text-center my-5">
               <Button
                 className="bg-primary rounded-lg text-white text-sm px-3 py-2"
-                href=""
+                href={link}
               >
                 Set new password
               </Button>
             </Section>
             <Text className="text-black text-[14px] leading-[24px]">
               or copy and paste this URL into your browser:{' '}
-              <Link href="" className="text-blue-600 no-underline">
-                link
+              <Link href={link} className="text-blue-600 no-underline">
+                {link}
               </Link>
             </Text>
             <Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
             <Text className="text-[#666666] text-[12px] leading-[24px]">
               This invitation was intended for{' '}
-              <strong className="text-black">username</strong>. If you were not
-              expecting this invitation, you can ignore this email. If you are
-              concerned about your account's safety, please reply to this email
-              to get in touch with us.
+              <strong className="text-black">{username}</strong>. If you were
+              not expecting this invitation, you can ignore this email. If you
+              are concerned about your account's safety, please reply to this
+              email to get in touch with us.
             </Text>
           </Container>
         </Body>
