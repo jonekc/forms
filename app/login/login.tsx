@@ -9,13 +9,14 @@ import { ToastContext } from '../../providers/ToastProvider';
 import { Loader } from '../../components/Loader';
 import { useMutation } from '../../utils/client/api';
 import { AuthResponse } from '../../types/auth';
+import { getDecodedToken } from 'utils/client/auth';
 
 const Login = () => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setIsAuthorized } = useContext(AuthContext);
+  const { setIsAuthorized, setIsAdmin } = useContext(AuthContext);
   const { showToast } = useContext(ToastContext);
 
   const router = useRouter();
@@ -31,9 +32,17 @@ const Login = () => {
       body: { name, password },
     })
       .then((data: AuthResponse) => {
+        const decodedToken = getDecodedToken(data.token);
+        const isAdmin =
+          decodedToken &&
+          'role' in decodedToken &&
+          decodedToken.role === 'admin';
+
         localStorage.setItem(TOKEN_KEY, data.token);
         setIsAuthorized(true);
-        router.replace('/posts');
+        setIsAdmin(isAdmin);
+
+        router.replace(isAdmin ? '/posts' : '/');
       })
       .catch((_error) => {
         showToast("Couldn't log in", 'alert-error');

@@ -134,7 +134,7 @@ const Post = ({ post }: PostProps) => {
       />
       <PhotoModal
         ref={photoModalRef}
-        title={selectedImageTitle}
+        title={selectedImageTitle || ''}
         src={selectedImage?.url || ''}
         handlePrev={handlePrev}
         handleNext={handleNext}

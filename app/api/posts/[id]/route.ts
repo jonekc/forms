@@ -25,7 +25,7 @@ const PATCH = async (
     (acc: { id: string; file: Blob | null }[], [key, value]) => {
       if (key.startsWith('file-')) {
         acc.push({
-          id: key.split('-')[1],
+          id: key.split('-')[1] || '',
           file: value instanceof Blob ? value : null,
         });
       }
