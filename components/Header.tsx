@@ -7,7 +7,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { AuthContext } from '../providers/AuthProvider';
 
 const Header: React.FC = () => {
-  const { isAuthorized, setIsAuthorized } = useContext(AuthContext);
+  const { isAuthorized, setIsAuthorized, isAdmin, setIsAdmin } =
+    useContext(AuthContext);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -18,11 +19,12 @@ const Header: React.FC = () => {
     localStorage.removeItem(TOKEN_KEY);
     router.push('/');
     setIsAuthorized(false);
+    setIsAdmin(false);
   };
 
   return (
     <nav className="flex gap-4 py-4 px-8 bg-primary">
-      {isAuthorized && (
+      {isAuthorized && isAdmin && (
         <Link
           href="/posts"
           className={`text-lg hover:text-neutral-content ${isActive('/posts') ? 'text-neutral-content' : 'text-white'}`}

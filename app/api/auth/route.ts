@@ -10,7 +10,10 @@ const POST = async (req: Request) => {
 
   try {
     // Find the user in your database
-    const user = await prisma.user.findFirst({ where: { name } });
+    const user = await prisma.user.findFirst({
+      where: { name },
+      include: { roles: { include: { role: true } } },
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -34,7 +37,7 @@ const POST = async (req: Request) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user.id },
+      { userId: user.id, role: user.roles[0]?.role.name },
       process.env.JWT_SECRET_KEY || '',
       {
         expiresIn: '1h',

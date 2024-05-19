@@ -50,7 +50,7 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
   >(
     post.images.map((image) => ({
       ...image,
-      title: getPostImageOriginalFilename(image.url),
+      title: getPostImageOriginalFilename(image.url) || '',
       file: '',
     })),
   );
