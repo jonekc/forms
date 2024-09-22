@@ -23,7 +23,7 @@ jobs:
       - name: Rename backup
         run: mv backups/backup.sql backups/backup_${{ steps.date.outputs.date }}.sql
       - name: Upload backup
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Database backup
           path: backups/*.sql
