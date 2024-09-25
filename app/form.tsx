@@ -110,6 +110,7 @@ const Form: React.FC = () => {
             accept="image/*"
             onChange={handleFilesChange}
             key={filesInputKey}
+            data-testid="post-file"
           />
         </div>
         {[...(files || [])].map((file, index) => (
@@ -130,6 +131,7 @@ const Form: React.FC = () => {
             className="btn btn-sm btn-primary"
             type="submit"
             disabled={isUpdating}
+            data-testid="post-submit"
           >
             {isUpdating && <Loader />}
             Submit
