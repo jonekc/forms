@@ -4,6 +4,7 @@ type InputProps = {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
+  id?: string;
 };
 
 const Input = ({
@@ -12,6 +13,7 @@ const Input = ({
   value,
   onChange,
   required,
+  id,
 }: InputProps) => (
   <input
     type={type}
@@ -20,6 +22,7 @@ const Input = ({
     onChange={onChange}
     required={required}
     className="input input-sm input-bordered"
+    data-testid={id}
   />
 );
 

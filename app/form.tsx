@@ -81,6 +81,7 @@ const Form: React.FC = () => {
           onChange={(e) => {
             setTitle(e.target.value);
           }}
+          id="post-title"
         />
         <Input
           placeholder="content"
@@ -89,6 +90,7 @@ const Form: React.FC = () => {
           onChange={(e) => {
             setContent(e.target.value);
           }}
+          id="post-content"
         />
         <Checkbox
           label="published"
@@ -96,6 +98,7 @@ const Form: React.FC = () => {
           onChange={(e) => {
             setPublished(e.target.checked);
           }}
+          id="post-published"
         />
         <div>
           <label htmlFor="images">Images: </label>
@@ -107,6 +110,7 @@ const Form: React.FC = () => {
             accept="image/*"
             onChange={handleFilesChange}
             key={filesInputKey}
+            data-testid="post-file"
           />
         </div>
         {[...(files || [])].map((file, index) => (
@@ -127,6 +131,7 @@ const Form: React.FC = () => {
             className="btn btn-sm btn-primary"
             type="submit"
             disabled={isUpdating}
+            data-testid="post-submit"
           >
             {isUpdating && <Loader />}
             Submit
