@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "next",
+    "dev": "prisma generate && next",
     "build": "prisma migrate deploy && prisma generate && next build",
     "start": "next start",
     "migration:draft": "prisma migrate dev --create-only",
