@@ -12,4 +12,5 @@ module.exports = {
   experimental: {
     serverMinification: false,
   },
+  output: "standalone"
 };

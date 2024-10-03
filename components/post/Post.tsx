@@ -63,7 +63,7 @@ const Post = ({ post }: PostProps) => {
   };
 
   return (
-    <div className="card glass p-4">
+    <div className="card p-4 border-gray-100 border-2 border-solid">
       {editing ? (
         <EditPost post={post} setEditing={setEditing} />
       ) : (
