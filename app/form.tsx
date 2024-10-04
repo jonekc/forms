@@ -7,6 +7,7 @@ import { Loader } from '../components/Loader';
 import { useMutation } from '../utils/client/api';
 import { ToastContext } from '../providers/ToastProvider';
 import { Progress } from 'components/Progress';
+import { Textarea } from 'components/form/Textarea';
 
 const Form: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -83,8 +84,8 @@ const Form: React.FC = () => {
           }}
           id="post-title"
         />
-        <Input
-          placeholder="content"
+        <Textarea
+          placeholder="Markdown content"
           required
           value={content}
           onChange={(e) => {

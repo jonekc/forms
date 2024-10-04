@@ -77,7 +77,9 @@ const Post = ({ post }: PostProps) => {
               </>
             )}
             {post.published ? null : <small>Draft</small>}
-            <ReactMarkdown>{post.content || ''}</ReactMarkdown>
+            <ReactMarkdown className="mt-2 prose prose-headings:mb-2 prose-p:my-2 prose-ul:mt-2 prose-ol:mt-2 prose-li:my-0">
+              {post.content || ''}
+            </ReactMarkdown>
             <div className="flex gap-2 mt-2">
               <button
                 className="btn btn-sm btn-primary"

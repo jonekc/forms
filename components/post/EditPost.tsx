@@ -172,7 +172,7 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
           ]}
         />
         <Textarea
-          placeholder="Content"
+          placeholder="Markdown content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
