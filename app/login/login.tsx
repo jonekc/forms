@@ -63,6 +63,7 @@ const Login = () => {
             setName(e.target.value);
           }}
           placeholder="Name"
+          id="login"
         />
         <Input
           type="password"
@@ -72,6 +73,7 @@ const Login = () => {
             setPassword(e.target.value);
           }}
           placeholder="Password"
+          id="password"
         />
         <a href="/reset-password" className="link link-primary my-1 text-sm">
           Forgot your password?
@@ -80,6 +82,7 @@ const Login = () => {
           type="submit"
           className="btn btn-sm btn-primary"
           disabled={isLoading}
+          data-testid="login-submit"
         >
           {isLoading && <Loader />}
           Submit

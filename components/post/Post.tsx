@@ -86,6 +86,7 @@ const Post = ({ post }: PostProps) => {
                 onClick={() => {
                   setEditing(true);
                 }}
+                data-testid="edit-post"
               >
                 Edit
               </button>
@@ -94,6 +95,7 @@ const Post = ({ post }: PostProps) => {
                 onClick={() => {
                   confirmationModalRef.current?.showModal();
                 }}
+                data-testid="remove-post"
               >
                 Delete
               </button>
