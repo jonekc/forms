@@ -82,7 +82,7 @@ const Form: React.FC = () => {
           onChange={(e) => {
             setTitle(e.target.value);
           }}
-          id="post-title"
+          id="post-title-field"
         />
         <Textarea
           placeholder="Markdown content"
@@ -91,7 +91,7 @@ const Form: React.FC = () => {
           onChange={(e) => {
             setContent(e.target.value);
           }}
-          id="post-content"
+          id="post-content-field"
         />
         <Checkbox
           label="published"
@@ -99,7 +99,7 @@ const Form: React.FC = () => {
           onChange={(e) => {
             setPublished(e.target.checked);
           }}
-          id="post-published"
+          id="post-published-field"
         />
         <div>
           <label htmlFor="images">Images: </label>
@@ -111,7 +111,7 @@ const Form: React.FC = () => {
             accept="image/*"
             onChange={handleFilesChange}
             key={filesInputKey}
-            data-testid="post-file"
+            data-testid="post-file-field"
           />
         </div>
         {[...(files || [])].map((file, index) => (

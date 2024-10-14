@@ -159,7 +159,7 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          id="post-title"
+          id="post-title-field"
         />
         <Select
           value={authorId || ''}
@@ -176,7 +176,7 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
           placeholder="Markdown content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          id="post-content"
+          id="post-content-field"
         />
         <Checkbox
           label="Published"

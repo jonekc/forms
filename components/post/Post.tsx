@@ -63,13 +63,18 @@ const Post = ({ post }: PostProps) => {
   };
 
   return (
-    <div className="card p-4 border-gray-100 border-2 border-solid">
+    <div
+      className="card p-4 border-gray-100 border-2 border-solid"
+      data-testid="post"
+    >
       {editing ? (
         <EditPost post={post} setEditing={setEditing} />
       ) : (
         <div className="flex items-center gap-2">
           <div>
-            <h2 className="text-lg font-medium">{post.title}</h2>
+            <h2 className="text-lg font-medium" data-testid="post-title">
+              {post.title}
+            </h2>
             {post.author && (
               <>
                 <small>By {post.author.name}</small>

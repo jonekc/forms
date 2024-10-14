@@ -1,9 +1,10 @@
 /// <reference types="cypress" />
 
-Cypress.Commands.add('selectById', (selector: string) =>
-  cy.get(`[data-testid=${selector}]`),
-);
-
-Cypress.Commands.add('findById', (selector: string) =>
-  this.find(`[data-testid=${selector}]`),
+Cypress.Commands.add(
+  'selectById',
+  { prevSubject: 'optional' },
+  (subject: JQuery<HTMLElement> | undefined, selector: string) =>
+    subject
+      ? cy.wrap(subject).find(`[data-testid=${selector}]`)
+      : cy.get(`[data-testid=${selector}]`),
 );
