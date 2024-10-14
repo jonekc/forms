@@ -12,13 +12,15 @@ jobs:
     env:
       NODE_VERSION: 21
       CYPRESS_BASE_URL: ${{ secrets.CYPRESS_BASE_URL }}
+      CYPRESS_LOGIN: ${{ secrets.CYPRESS_LOGIN }}
+      CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 

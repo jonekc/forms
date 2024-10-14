@@ -1,5 +1,5 @@
 {
-  "name": "hello-next",
+  "name": "forms-application",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -11,7 +11,7 @@
     "email": "email dev --dir app/emails"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jonatan Czapla",
   "license": "MIT",
   "dependencies": {
     "@google-cloud/storage": "^7.11.0",
@@ -32,6 +32,7 @@
     "swr": "^2.2.5"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.15",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "17.0.14",

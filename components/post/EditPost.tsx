@@ -159,6 +159,7 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          id="post-title-field"
         />
         <Select
           value={authorId || ''}
@@ -172,9 +173,10 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
           ]}
         />
         <Textarea
-          placeholder="Content"
+          placeholder="Markdown content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          id="post-content-field"
         />
         <Checkbox
           label="Published"
@@ -186,6 +188,7 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
             className="btn btn-sm btn-primary"
             onClick={handleSave}
             disabled={isSaving}
+            data-testid="post-submit"
           >
             {isSaving && <Loader />}
             Save

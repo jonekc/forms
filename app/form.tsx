@@ -7,6 +7,7 @@ import { Loader } from '../components/Loader';
 import { useMutation } from '../utils/client/api';
 import { ToastContext } from '../providers/ToastProvider';
 import { Progress } from 'components/Progress';
+import { Textarea } from 'components/form/Textarea';
 
 const Form: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -81,16 +82,16 @@ const Form: React.FC = () => {
           onChange={(e) => {
             setTitle(e.target.value);
           }}
-          id="post-title"
+          id="post-title-field"
         />
-        <Input
-          placeholder="content"
+        <Textarea
+          placeholder="Markdown content"
           required
           value={content}
           onChange={(e) => {
             setContent(e.target.value);
           }}
-          id="post-content"
+          id="post-content-field"
         />
         <Checkbox
           label="published"
@@ -98,7 +99,7 @@ const Form: React.FC = () => {
           onChange={(e) => {
             setPublished(e.target.checked);
           }}
-          id="post-published"
+          id="post-published-field"
         />
         <div>
           <label htmlFor="images">Images: </label>
@@ -110,7 +111,7 @@ const Form: React.FC = () => {
             accept="image/*"
             onChange={handleFilesChange}
             key={filesInputKey}
-            data-testid="post-file"
+            data-testid="post-file-field"
           />
         </div>
         {[...(files || [])].map((file, index) => (

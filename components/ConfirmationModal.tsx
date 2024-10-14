@@ -23,6 +23,7 @@ const ConfirmationModal = forwardRef<HTMLDialogElement, ConfirmationModalProps>(
             className="btn btn-sm btn-primary"
             onClick={onConfirm}
             disabled={buttonLoading}
+            data-testid="confirm-button"
           >
             {buttonLoading && <Loader />}
             Confirm

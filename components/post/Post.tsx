@@ -63,13 +63,18 @@ const Post = ({ post }: PostProps) => {
   };
 
   return (
-    <div className="card p-4 border-gray-100 border-2 border-solid">
+    <div
+      className="card p-4 border-gray-100 border-2 border-solid"
+      data-testid="post"
+    >
       {editing ? (
         <EditPost post={post} setEditing={setEditing} />
       ) : (
         <div className="flex items-center gap-2">
           <div>
-            <h2 className="text-lg font-medium">{post.title}</h2>
+            <h2 className="text-lg font-medium" data-testid="post-title">
+              {post.title}
+            </h2>
             {post.author && (
               <>
                 <small>By {post.author.name}</small>
@@ -77,13 +82,16 @@ const Post = ({ post }: PostProps) => {
               </>
             )}
             {post.published ? null : <small>Draft</small>}
-            <ReactMarkdown>{post.content || ''}</ReactMarkdown>
+            <ReactMarkdown className="mt-2 prose prose-headings:mb-2 prose-p:my-2 prose-ul:mt-2 prose-ol:mt-2 prose-li:my-0">
+              {post.content || ''}
+            </ReactMarkdown>
             <div className="flex gap-2 mt-2">
               <button
                 className="btn btn-sm btn-primary"
                 onClick={() => {
                   setEditing(true);
                 }}
+                data-testid="edit-post"
               >
                 Edit
               </button>
@@ -92,6 +100,7 @@ const Post = ({ post }: PostProps) => {
                 onClick={() => {
                   confirmationModalRef.current?.showModal();
                 }}
+                data-testid="remove-post"
               >
                 Delete
               </button>
