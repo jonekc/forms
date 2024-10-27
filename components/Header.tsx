@@ -24,7 +24,7 @@ const Header: React.FC = () => {
 
   return (
     <nav className="flex gap-4 py-4 px-8 bg-primary">
-      {isAuthorized && isAdmin && (
+      {isAdmin && (
         <Link
           href="/posts"
           className={`text-lg hover:text-neutral-content ${isActive('/posts') ? 'text-neutral-content' : 'text-white'}`}

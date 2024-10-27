@@ -4,7 +4,7 @@ You can fill in the form. The fields will be saved in the database. A post may i
 
 ## How to run the application using Docker?
 
-Run the following commands in the terminal (project root directory):
+Create a `.env` file based on the `.env.example` file with filled values. Run the following commands in the terminal (project root directory):
 
 - production version:
   - `docker-compose build` - build the image
@@ -25,3 +25,9 @@ This project is for demonstration purposes only so the credentials are explicit:
 
 - login - Robert
 - password - #d!@SC28
+
+## Database migrations
+
+- Create a new migration without applying it: `npm run migration:draft`
+- Apply the edited migration: `npm run migration:dev`
+- Changes are applied automatically to a production database when deploying the application (build command)

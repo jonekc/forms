@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useContext } from 'react';
 import useSWR from 'swr';
 import Post from '../../components/post/Post';
 import { fetcher } from '../../utils/client/api';
 import { PostWithAuthor } from '../../types/post';
 import { Loader } from '../../components/Loader';
 import { OverlayLoader } from 'components/OverlayLoader';
+import { AuthContext } from 'providers/AuthProvider';
 
 const Posts: React.FC = () => {
   const {
@@ -15,6 +16,7 @@ const Posts: React.FC = () => {
     isLoading,
     isValidating,
   } = useSWR<PostWithAuthor[]>('/api/posts', fetcher);
+  const { isAdmin } = useContext(AuthContext);
 
   const posts = !error ? postsResponse : undefined;
 
@@ -28,7 +30,9 @@ const Posts: React.FC = () => {
       ) : (
         <OverlayLoader isLoading={isValidating}>
           <div className="grid gap-3">
-            {posts?.map((post) => <Post key={post.id} post={post} />)}{' '}
+            {posts?.map((post) => (
+              <Post key={post.id} post={post} isAdmin={isAdmin} />
+            ))}
           </div>
         </OverlayLoader>
       )}

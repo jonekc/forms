@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'lib/prisma';
 import { checkAuth } from 'utils/api/auth';
 import { getDecodedToken } from 'utils/api/common';
-import { getFilename, supabase, uploadImages } from 'utils/api/supabase';
+import { getPostImages, uploadImages } from 'utils/api/supabase';
 
 const GET = async () => {
   // Check if user is authenticated using JWT
@@ -26,17 +26,7 @@ const GET = async () => {
     });
     posts = await Promise.all(
       posts.map(async (post) => {
-        const updatedImages = await Promise.all(
-          post.images.map(async (image) => {
-            const { data } = await supabase.storage
-              .from(process.env.SUPABASE_BUCKET || '')
-              .createSignedUrl(getFilename(image.url), 60 * 10);
-            return {
-              ...image,
-              url: data?.signedUrl || '',
-            };
-          }),
-        );
+        const updatedImages = await getPostImages(post.images);
         return {
           ...post,
           images: updatedImages,
