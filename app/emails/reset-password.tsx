@@ -29,15 +29,6 @@ const ResetPassword = ({ username, link }: ResetPasswordProps) => {
 
         <Body className="bg-white my-auto mx-auto font-sans px-2">
           <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
-            {/* <Section className="mt-[32px]">
-              <Img
-                src={`${baseUrl}/static/vercel-logo.png`}
-                width="40"
-                height="37"
-                alt="Vercel"
-                className="my-0 mx-auto"
-              />
-            </Section> */}
             <Text className="text-black text-[14px] leading-[24px]">
               Hi <strong>{username}</strong>,
             </Text>
