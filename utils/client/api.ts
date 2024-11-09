@@ -15,9 +15,12 @@ type MutateResponse = MutationFetcher<
 >;
 
 const fetcher: Fetcher<any, string> = async (url: string) => {
-  const headers = {
-    Authorization: `Bearer ${getUserToken()}`,
-  };
+  const token = getUserToken();
+  const headers = token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : undefined;
 
   try {
     const response = await axios.get(url, { headers });

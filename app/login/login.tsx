@@ -42,7 +42,7 @@ const Login = () => {
         setIsAuthorized(true);
         setIsAdmin(isAdmin);
 
-        router.replace(isAdmin ? '/posts' : '/');
+        router.replace('/');
       })
       .catch((_error) => {
         showToast("Couldn't log in", 'alert-error');

@@ -2,10 +2,10 @@
 
 import React, { useContext } from 'react';
 import useSWR from 'swr';
-import Post from '../../components/post/Post';
-import { fetcher } from '../../utils/client/api';
-import { PostWithAuthor } from '../../types/post';
-import { Loader } from '../../components/Loader';
+import Post from '../components/post/Post';
+import { fetcher } from '../utils/client/api';
+import { PostWithAuthor } from '../types/post';
+import { Loader } from '../components/Loader';
 import { OverlayLoader } from 'components/OverlayLoader';
 import { AuthContext } from 'providers/AuthProvider';
 

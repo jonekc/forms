@@ -12,5 +12,11 @@ module.exports = {
   experimental: {
     serverMinification: false,
   },
-  output: "standalone"
+  output: "standalone",
+  redirects: async () => [
+    {
+      source: '/posts',
+      destination: '/',
+      permanent: true,
+    }]
 };

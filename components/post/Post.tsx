@@ -74,7 +74,7 @@ const Post = ({ post, isSinglePost, isAdmin }: PostProps) => {
       {editing ? (
         <EditPost post={post} setEditing={setEditing} />
       ) : (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-5">
           <div>
             <PostHeading
               title={post.title}

@@ -26,7 +26,7 @@ const PostDetails: React.FC = () => {
 
   return (
     <div className="my-4">
-      <Link href="/posts" className="flex items-center gap-2 mb-4 h-8">
+      <Link href="/" className="flex items-center gap-2 mb-4 h-8">
         <ArrowLeftIcon className="h-6 w-6" />
         <h3 className="font-medium">Back</h3>
       </Link>

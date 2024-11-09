@@ -1,5 +1,5 @@
-import Form from './form';
+import Posts from './posts';
 
-const Page = () => <Form />;
+const Page = () => <Posts />;
 
 export default Page;

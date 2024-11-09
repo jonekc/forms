@@ -24,20 +24,20 @@ const Header: React.FC = () => {
 
   return (
     <nav className="flex gap-4 py-4 px-8 bg-primary">
-      {isAdmin && (
-        <Link
-          href="/posts"
-          className={`text-lg hover:text-neutral-content ${isActive('/posts') ? 'text-neutral-content' : 'text-white'}`}
-        >
-          Posts
-        </Link>
-      )}
       <Link
-        href="/"
+        href="/posts"
         className={`text-lg hover:text-neutral-content ${isActive('/') ? 'text-neutral-content' : 'text-white'}`}
       >
-        New
+        Blog
       </Link>
+      {isAdmin && (
+        <Link
+          href="/new"
+          className={`text-lg hover:text-neutral-content ${isActive('/new') ? 'text-neutral-content' : 'text-white'}`}
+        >
+          New
+        </Link>
+      )}
       {isAuthorized ? (
         <button
           className="text-lg text-white hover:text-neutral-content"

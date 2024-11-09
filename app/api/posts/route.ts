@@ -5,41 +5,33 @@ import { getDecodedToken } from 'utils/api/common';
 import { getPostImages, uploadImages } from 'utils/api/supabase';
 
 const GET = async () => {
-  // Check if user is authenticated using JWT
-  const { isAuthorized, isAdmin } = await checkAuth();
+  // Check if user is admin using JWT
+  const { isAdmin } = await checkAuth();
 
-  if (isAuthorized && isAdmin) {
-    let posts = await prisma.post.findMany({
-      orderBy: { createdAt: 'asc' },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            createdAt: true,
-            updatedAt: true,
-          },
+  let posts = await prisma.post.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      author: {
+        select: {
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          ...(isAdmin && { id: true, email: true }),
         },
-        images: true,
       },
-    });
-    posts = await Promise.all(
-      posts.map(async (post) => {
-        const updatedImages = await getPostImages(post.images);
-        return {
-          ...post,
-          images: updatedImages,
-        };
-      }),
-    );
-    return NextResponse.json(posts, { status: 200 });
-  } else {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: isAuthorized ? 403 : 401 },
-    );
-  }
+      images: true,
+    },
+  });
+  posts = await Promise.all(
+    posts.map(async (post) => {
+      const updatedImages = await getPostImages(post.images);
+      return {
+        ...post,
+        images: updatedImages,
+      };
+    }),
+  );
+  return NextResponse.json(posts, { status: 200 });
 };
 
 const POST = async (req: NextRequest) => {

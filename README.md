@@ -1,4 +1,4 @@
-# Forms application
+# Blog application
 
 You can fill in the form. The fields will be saved in the database. A post may include images. Admin can view the added data and edit the form submissions.
 

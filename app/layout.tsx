@@ -5,7 +5,7 @@ import { AuthProvider } from '../providers/AuthProvider';
 import { ToastProvider } from '../providers/ToastProvider';
 
 export const metadata: Metadata = {
-  title: 'Forms application',
+  title: 'Blog application',
   description:
     'Send forms with images and the data will be saved in a database',
 };
