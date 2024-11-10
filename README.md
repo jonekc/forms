@@ -17,7 +17,7 @@ Run the following commands in the terminal (project root directory):
 ## GitHub actions
 
 - E2E tests - run daily in the production using Cypress, can be triggered manually
-- Database Backup - SQL file of a Postgres dump is generated as the action artifact
+- Database Backup - SQL file of a Postgres dump is sent to Google Cloud Storage
 
 ## Admin credentials
 
