@@ -25,8 +25,13 @@ jobs:
       - name: Rename backup
         run: mv backups/backup.sql backups/backup_${{ steps.date.outputs.date }}.sql
         
-      - name: Upload backup
-        uses: actions/upload-artifact@v4
+      - name: Upload backup to Google Cloud Storage
+        uses: google-github-actions/upload-cloud-storage@main
         with:
-          name: Database backup
-          path: backups/*.sql
+          bucket: ${{ secrets.GCLOUD_BUCKET_NAME }}
+          source: backups/backup_${{ steps.date.outputs.date }}.sql
+          destination: 'db-backups/'
+        env:
+          GCLOUD_PROJECT_ID: ${{ secrets.GCLOUD_PROJECT_ID }}
+          GCLOUD_CLIENT_EMAIL: ${{ secrets.GCLOUD_CLIENT_EMAIL }}
+          GCLOUD_PRIVATE_KEY: ${{ secrets.GCLOUD_PRIVATE_KEY }}
