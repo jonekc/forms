@@ -10,6 +10,7 @@ import { Loader } from '../../components/Loader';
 import { useMutation } from '../../utils/client/api';
 import { AuthResponse } from '../../types/auth';
 import { getDecodedToken } from 'utils/client/auth';
+import { mutate } from 'swr';
 
 const Login = () => {
   const [name, setName] = useState('');
@@ -41,6 +42,7 @@ const Login = () => {
         localStorage.setItem(TOKEN_KEY, data.token);
         setIsAuthorized(true);
         setIsAdmin(isAdmin);
+        mutate(() => true);
 
         router.replace('/');
       })

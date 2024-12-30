@@ -11,6 +11,7 @@ import { AuthContext } from 'providers/AuthProvider';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { OverlayLoader } from 'components/OverlayLoader';
+import PostComments from 'components/post/comments/PostComments';
 
 const PostDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -36,7 +37,14 @@ const PostDetails: React.FC = () => {
         </div>
       ) : post ? (
         <OverlayLoader isLoading={isValidating}>
-          <Post post={post} isSinglePost isAdmin={isAdmin} />
+          <div className="grid gap-3">
+            <Post post={post} isSinglePost isAdmin={isAdmin} />
+            <PostComments
+              postId={post.id}
+              comments={post.comments}
+              isAdmin={isAdmin}
+            />
+          </div>
         </OverlayLoader>
       ) : (
         <h2 className="text-lg font-medium">Post not found</h2>

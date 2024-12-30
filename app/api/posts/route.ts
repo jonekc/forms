@@ -21,12 +21,14 @@ const GET = async () => {
       },
       images: true,
     },
+    ...(!isAdmin && { where: { published: true } }),
   });
   posts = await Promise.all(
     posts.map(async (post) => {
       const updatedImages = await getPostImages(post.images);
       return {
         ...post,
+        authorId: isAdmin ? post.author?.id || null : null,
         images: updatedImages,
       };
     }),
@@ -46,46 +48,52 @@ const POST = async (req: NextRequest) => {
     }
     return acc;
   }, []);
+  // Check if user is admin using JWT
+  const { isAdmin } = await checkAuth();
 
-  const filenames = await uploadImages(files);
-  if (!filenames) {
-    return NextResponse.json(
-      { error: 'Failed to upload images' },
-      { status: 500 },
-    );
-  }
+  if (isAdmin) {
+    const filenames = await uploadImages(files);
+    if (!filenames) {
+      return NextResponse.json(
+        { error: 'Failed to upload images' },
+        { status: 500 },
+      );
+    }
 
-  const decodedToken = getDecodedToken();
-  let userId: string | undefined =
-    typeof decodedToken === 'string' ? undefined : decodedToken.userId;
+    const decodedToken = getDecodedToken();
+    let userId: string | undefined =
+      typeof decodedToken === 'string' ? undefined : decodedToken.userId;
 
-  if (title) {
-    const result = await prisma.post.create({
-      data: {
-        title: title || '',
-        content: content || '',
-        published,
-        images: {
-          create: filenames.map((url) => ({ url })),
-        },
-        ...(userId && { author: { connect: { id: userId } } }),
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            createdAt: true,
-            updatedAt: true,
+    if (title) {
+      const result = await prisma.post.create({
+        data: {
+          title: title || '',
+          content: content || '',
+          published,
+          images: {
+            create: filenames.map((url) => ({ url })),
           },
+          ...(userId && { author: { connect: { id: userId } } }),
         },
-        images: true,
-      },
-    });
-    return NextResponse.json(result, { status: 201 });
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+          },
+          images: true,
+        },
+      });
+      return NextResponse.json(result, { status: 201 });
+    } else {
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    }
   } else {
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 };
 

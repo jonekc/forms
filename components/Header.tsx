@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { TOKEN_KEY } from '../utils/client/storage';
 import { usePathname, useRouter } from 'next/navigation';
 import { AuthContext } from '../providers/AuthProvider';
+import { mutate } from 'swr';
 
 const Header: React.FC = () => {
   const { isAuthorized, setIsAuthorized, isAdmin, setIsAdmin } =
@@ -20,6 +21,7 @@ const Header: React.FC = () => {
     router.push('/');
     setIsAuthorized(false);
     setIsAdmin(false);
+    mutate(() => true);
   };
 
   return (

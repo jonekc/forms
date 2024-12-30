@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../../lib/prisma';
-import { checkAuth } from '../../../../utils/api/auth';
+import prisma from 'lib/prisma';
+import { checkAuth } from 'utils/api/auth';
 import {
   getFilename,
   getPostImages,
@@ -29,10 +29,23 @@ const GET = async (
         },
       },
       images: true,
+      comments: {
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          content: true,
+          authorName: true,
+          authorId: isAuthorized && isAdmin,
+          createdAt: true,
+          updatedAt: true,
+          postId: true,
+        },
+      },
     },
   });
   if (post) {
     post.images = await getPostImages(post.images);
+    post.authorId = isAdmin ? post.author?.id || null : null;
     return NextResponse.json(post, { status: 200 });
   } else {
     return NextResponse.json({ error: 'Post not found' }, { status: 404 });
