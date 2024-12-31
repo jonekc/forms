@@ -19,13 +19,6 @@ Create a `.env` file based on the `.env.example` file with filled values. Run th
 - E2E tests - run daily in the production using Cypress, can be triggered manually
 - Database Backup - SQL file of a Postgres dump is generated as the action artifact
 
-## Admin credentials
-
-This project is for demonstration purposes only so the credentials are explicit:
-
-- login - Robert
-- password - #d!@SC28
-
 ## Database migrations
 
 - Create a new migration without applying it: `npm run migration:draft`
