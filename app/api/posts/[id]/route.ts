@@ -1,8 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../../lib/prisma';
-import { checkAuth } from '../../../../utils/api/auth';
-import { getFilename, supabase, uploadImages } from 'utils/api/supabase';
+import prisma from 'lib/prisma';
+import { checkAuth } from 'utils/api/auth';
+import {
+  getFilename,
+  getPostImages,
+  supabase,
+  uploadImages,
+} from 'utils/api/supabase';
 import { Image } from '@prisma/client';
+
+const GET = async (
+  _req: NextRequest,
+  { params: { id } }: { params: { id: string } },
+) => {
+  // Check if user is authenticated using JWT
+  const { isAuthorized, isAdmin } = await checkAuth();
+
+  let post = await prisma.post.findFirst({
+    where: { id },
+    include: {
+      author: {
+        select: {
+          id: isAuthorized && isAdmin,
+          name: true,
+          email: isAuthorized && isAdmin,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      images: true,
+      comments: {
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          content: true,
+          authorName: true,
+          authorId: isAuthorized && isAdmin,
+          createdAt: true,
+          updatedAt: true,
+          postId: true,
+        },
+      },
+    },
+  });
+  if (post) {
+    post.images = await getPostImages(post.images);
+    post.authorId = isAdmin ? post.author?.id || null : null;
+    return NextResponse.json(post, { status: 200 });
+  } else {
+    return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+  }
+};
 
 const PATCH = async (
   req: NextRequest,
@@ -160,4 +208,4 @@ const DELETE = async (
   }
 };
 
-export { PATCH, DELETE };
+export { GET, PATCH, DELETE };

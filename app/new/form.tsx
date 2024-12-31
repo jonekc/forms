@@ -1,11 +1,11 @@
 'use client';
 
 import React, { ChangeEvent, useContext, useState } from 'react';
-import { Input } from '../components/form/Input';
-import { Checkbox } from '../components/form/Checkbox';
-import { Loader } from '../components/Loader';
-import { useMutation } from '../utils/client/api';
-import { ToastContext } from '../providers/ToastProvider';
+import { Input } from '../../components/form/Input';
+import { Checkbox } from '../../components/form/Checkbox';
+import { Loader } from '../../components/Loader';
+import { useMutation } from '../../utils/client/api';
+import { ToastContext } from '../../providers/ToastProvider';
 import { Progress } from 'components/Progress';
 import { Textarea } from 'components/form/Textarea';
 

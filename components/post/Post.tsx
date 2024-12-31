@@ -9,14 +9,19 @@ import { getPostImageOriginalFilename } from '../../utils/client/post';
 import { Image } from '../Image';
 import { ToastContext } from '../../providers/ToastProvider';
 import EditPost from './EditPost';
+import { PostHeading } from './PostHeading';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const VISIBLE_IMAGES = 4;
 
 export type PostProps = {
   post: PostWithAuthor;
+  isSinglePost?: boolean;
+  isAdmin?: boolean;
 };
 
-const Post = ({ post }: PostProps) => {
+const Post = ({ post, isSinglePost, isAdmin }: PostProps) => {
   const [editing, setEditing] = useState(false);
   const [isDeleting, setDeleting] = useState(false);
   const [selectedImage, setSelectedImage] = useState<ImageType>();
@@ -27,16 +32,21 @@ const Post = ({ post }: PostProps) => {
   const photoModalRef = useRef<HTMLDialogElement>(null);
 
   const { showToast } = useContext(ToastContext);
+  const router = useRouter();
 
   const { trigger: triggerPostMutation } = useMutation(
     `/api/posts/${post.id}`,
     '/api/posts',
+    { populateCache: () => undefined, revalidate: false },
   );
 
   const handleDelete = async () => {
     setDeleting(true);
     try {
       await triggerPostMutation({ method: 'DELETE' });
+      if (isSinglePost) {
+        router.replace('/');
+      }
     } catch (e) {
       showToast("Couldn't delete a post", 'alert-error');
     }
@@ -70,11 +80,13 @@ const Post = ({ post }: PostProps) => {
       {editing ? (
         <EditPost post={post} setEditing={setEditing} />
       ) : (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-5">
           <div>
-            <h2 className="text-lg font-medium" data-testid="post-title">
-              {post.title}
-            </h2>
+            <PostHeading
+              title={post.title}
+              id={post.id}
+              isSinglePost={isSinglePost}
+            />
             {post.author && (
               <>
                 <small>By {post.author.name}</small>
@@ -86,24 +98,37 @@ const Post = ({ post }: PostProps) => {
               {post.content || ''}
             </ReactMarkdown>
             <div className="flex gap-2 mt-2">
-              <button
-                className="btn btn-sm btn-primary"
-                onClick={() => {
-                  setEditing(true);
-                }}
-                data-testid="edit-post"
-              >
-                Edit
-              </button>
-              <button
-                className="btn btn-sm btn-error"
-                onClick={() => {
-                  confirmationModalRef.current?.showModal();
-                }}
-                data-testid="remove-post"
-              >
-                Delete
-              </button>
+              {isAdmin && (
+                <>
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() => {
+                      setEditing(true);
+                    }}
+                    data-testid="edit-post"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-sm btn-error"
+                    onClick={() => {
+                      confirmationModalRef.current?.showModal();
+                    }}
+                    data-testid="remove-post"
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+              {!isSinglePost && (
+                <Link
+                  href={`/posts/${post.id}`}
+                  className="text-blue-600 hover:underline"
+                  data-testid="show-details"
+                >
+                  <button className="btn btn-sm">More</button>
+                </Link>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-1 flex-wrap">

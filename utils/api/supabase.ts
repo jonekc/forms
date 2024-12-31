@@ -1,3 +1,4 @@
+import { Image } from '@prisma/client';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -31,4 +32,17 @@ const uploadImages = async (files: Blob[]) => {
 
 const getFilename = (url: string) => url.split('/').pop() || '';
 
-export { supabase, uploadImages, getFilename };
+const getPostImages = (images: Image[]) =>
+  Promise.all(
+    images.map(async (image) => {
+      const { data } = await supabase.storage
+        .from(process.env.SUPABASE_BUCKET || '')
+        .createSignedUrl(getFilename(image.url), 60 * 10);
+      return {
+        ...image,
+        url: data?.signedUrl || '',
+      };
+    }),
+  );
+
+export { supabase, uploadImages, getFilename, getPostImages };

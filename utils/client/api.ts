@@ -1,6 +1,9 @@
 import { Fetcher } from 'swr';
 import { TOKEN_KEY, getUserToken } from './storage';
-import useSWRMutation, { MutationFetcher } from 'swr/mutation';
+import useSWRMutation, {
+  MutationFetcher,
+  SWRMutationConfiguration,
+} from 'swr/mutation';
 import { mutate } from 'swr';
 import axios, { AxiosProgressEvent } from 'axios';
 
@@ -14,22 +17,28 @@ type MutateResponse = MutationFetcher<
   }
 >;
 
+const handleUnauthorized = (error: unknown) => {
+  if (axios.isAxiosError(error) && error.response?.status === 401) {
+    localStorage.removeItem(TOKEN_KEY);
+    window.location.href = '/login';
+  }
+  console.log(error);
+  throw new Error('An error occurred while fetching the data');
+};
+
 const fetcher: Fetcher<any, string> = async (url: string) => {
-  const headers = {
-    Authorization: `Bearer ${getUserToken()}`,
-  };
+  const token = getUserToken();
+  const headers = token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : undefined;
 
   try {
     const response = await axios.get(url, { headers });
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      localStorage.removeItem(TOKEN_KEY);
-      window.location.href = '/login';
-    } else {
-      console.log(error);
-      throw new Error('An error occurred while fetching the data');
-    }
+    handleUnauthorized(error);
   }
 };
 
@@ -40,7 +49,7 @@ const mutateResponse: MutateResponse = async (
   const token = getUserToken();
   const headers = {
     ...(!(body instanceof FormData) && { 'Content-Type': 'application/json' }),
-    ...(token && { Authorization: `Bearer ${getUserToken()}` }),
+    ...(token && { Authorization: `Bearer ${token}` }),
   };
 
   try {
@@ -58,22 +67,22 @@ const mutateResponse: MutateResponse = async (
 
     return response.data;
   } catch (error) {
-    console.log(error);
-    throw new Error('An error occurred while fetching the data');
+    handleUnauthorized(error);
   }
 };
 
-const useMutation = (url: string, invalidateKey?: string) =>
-  useSWRMutation(
-    url,
-    mutateResponse,
-    invalidateKey
-      ? {
-          onSuccess: () => {
-            mutate(invalidateKey);
-          },
-        }
-      : undefined,
-  );
+const useMutation = (
+  url: string,
+  invalidateKey?: string,
+  options?: SWRMutationConfiguration<any, any>,
+) =>
+  useSWRMutation(url, mutateResponse, {
+    ...options,
+    ...(invalidateKey && {
+      onSuccess: () => {
+        mutate(invalidateKey);
+      },
+    }),
+  });
 
 export { fetcher, useMutation };
