@@ -44,6 +44,7 @@ const Header: React.FC = () => {
         <button
           className="text-lg text-white hover:text-neutral-content"
           onClick={handleLogout}
+          data-testid="logout-button"
         >
           Logout
         </button>

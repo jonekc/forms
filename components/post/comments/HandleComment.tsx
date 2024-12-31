@@ -91,7 +91,7 @@ const HandleComment = ({
           <button
             className="btn btn-sm btn-primary"
             disabled={isSaving}
-            data-testid="post-submit"
+            data-testid="comment-submit"
           >
             {isSaving && <Loader />}
             Save

@@ -11,6 +11,7 @@ import { ToastContext } from '../../providers/ToastProvider';
 import EditPost from './EditPost';
 import { PostHeading } from './PostHeading';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const VISIBLE_IMAGES = 4;
 
@@ -31,16 +32,21 @@ const Post = ({ post, isSinglePost, isAdmin }: PostProps) => {
   const photoModalRef = useRef<HTMLDialogElement>(null);
 
   const { showToast } = useContext(ToastContext);
+  const router = useRouter();
 
   const { trigger: triggerPostMutation } = useMutation(
     `/api/posts/${post.id}`,
     '/api/posts',
+    { populateCache: () => undefined, revalidate: false },
   );
 
   const handleDelete = async () => {
     setDeleting(true);
     try {
       await triggerPostMutation({ method: 'DELETE' });
+      if (isSinglePost) {
+        router.replace('/');
+      }
     } catch (e) {
       showToast("Couldn't delete a post", 'alert-error');
     }
