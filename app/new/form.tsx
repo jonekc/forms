@@ -74,7 +74,7 @@ const Form: React.FC = () => {
   return (
     <>
       <h1 className="font-bold text-2xl my-4">Create new post</h1>
-      <form onSubmit={handleSubmit} className="grid gap-2">
+      <form onSubmit={handleSubmit} className="grid gap-2 prose">
         <Input
           placeholder="title"
           required

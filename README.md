@@ -1,8 +1,8 @@
 # Blog application
 
-You can fill in the form. The fields will be saved in the database. A post may include images. Admin can view the added data and edit the form submissions.
+Posts are saved in the database. An article may include images. Admin can create new content using a form and edit the posts.
 
-## How to run the application using Docker?
+## How to run the application locally using Docker?
 
 Create a `.env` file based on the `.env.example` file with filled values. Run the following commands in the terminal (project root directory):
 

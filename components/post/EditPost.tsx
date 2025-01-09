@@ -22,6 +22,7 @@ import { ToastContext } from '../../providers/ToastProvider';
 import { Image } from 'components/Image';
 import { EditImage } from './EditImage';
 import { Progress } from 'components/Progress';
+import ReactMarkdown from 'react-markdown';
 
 type SelectedImage = {
   url: string;
@@ -153,8 +154,8 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
   };
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="grid gap-2">
+    <div className="flex items-center gap-4 flex-wrap">
+      <div className="grid gap-2 prose flex-1">
         <Input
           placeholder="Title"
           value={title}
@@ -178,6 +179,9 @@ const EditPost = ({ post, setEditing }: EditPostProps) => {
           onChange={(e) => setContent(e.target.value)}
           id="post-content-field"
         />
+        <ReactMarkdown className="prose prose-headings:mb-2 prose-p:my-2 prose-ul:mt-2 prose-ol:mt-2 prose-li:my-0">
+          {content}
+        </ReactMarkdown>
         <Checkbox
           label="Published"
           checked={published}

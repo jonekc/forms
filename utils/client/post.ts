@@ -6,4 +6,20 @@ const getPostImageOriginalFilename = (url?: string) => {
     : filename?.slice(originalNameIndex + 1);
 };
 
-export { getPostImageOriginalFilename };
+const displayPostContent = ({
+  content,
+  isSinglePost,
+}: {
+  content?: string | null;
+  isSinglePost?: boolean;
+}) => {
+  const fullContent = content || '';
+  const previewLength = 180;
+  const previewContent =
+    fullContent.length > previewLength
+      ? `${fullContent.slice(0, previewLength)}...`
+      : fullContent;
+  return isSinglePost ? fullContent : previewContent;
+};
+
+export { getPostImageOriginalFilename, displayPostContent };
