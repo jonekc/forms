@@ -5,7 +5,10 @@ import { useMutation } from '../../utils/client/api';
 import { Image as ImageType } from '@prisma/client';
 import { ConfirmationModal } from '../ConfirmationModal';
 import { PhotoModal } from '../PhotoModal';
-import { getPostImageOriginalFilename } from '../../utils/client/post';
+import {
+  displayPostContent,
+  getPostImageOriginalFilename,
+} from '../../utils/client/post';
 import { Image } from '../Image';
 import { ToastContext } from '../../providers/ToastProvider';
 import EditPost from './EditPost';
@@ -80,7 +83,7 @@ const Post = ({ post, isSinglePost, isAdmin }: PostProps) => {
       {editing ? (
         <EditPost post={post} setEditing={setEditing} />
       ) : (
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-5 flex-wrap">
           <div>
             <PostHeading
               title={post.title}
@@ -95,9 +98,9 @@ const Post = ({ post, isSinglePost, isAdmin }: PostProps) => {
             )}
             {post.published ? null : <small>Draft</small>}
             <ReactMarkdown className="mt-2 prose prose-headings:mb-2 prose-p:my-2 prose-ul:mt-2 prose-ol:mt-2 prose-li:my-0">
-              {post.content || ''}
+              {displayPostContent({ content: post.content, isSinglePost })}
             </ReactMarkdown>
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-2 mt-2 flex-wrap">
               {isAdmin && (
                 <>
                   <button
