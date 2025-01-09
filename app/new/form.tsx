@@ -8,6 +8,7 @@ import { useMutation } from '../../utils/client/api';
 import { ToastContext } from '../../providers/ToastProvider';
 import { Progress } from 'components/Progress';
 import { Textarea } from 'components/form/Textarea';
+import ReactMarkdown from 'react-markdown';
 
 const Form: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -93,6 +94,9 @@ const Form: React.FC = () => {
           }}
           id="post-content-field"
         />
+        <ReactMarkdown className="prose prose-headings:mb-2 prose-p:my-2 prose-ul:mt-2 prose-ol:mt-2 prose-li:my-0">
+          {content}
+        </ReactMarkdown>
         <Checkbox
           label="published"
           checked={published}
