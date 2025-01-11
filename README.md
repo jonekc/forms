@@ -24,3 +24,9 @@ Create a `.env` file based on the `.env.example` file with filled values. Run th
 - Create a new migration without applying it: `npm run migration:draft`
 - Apply the edited migration: `npm run migration:dev`
 - Changes are applied automatically to a production database when deploying the application (build command)
+
+## Admin panel screenshots
+![image](https://github.com/user-attachments/assets/19e34d1f-dc08-48e9-a601-a9a3102a0a36)
+![image](https://github.com/user-attachments/assets/a7bf3bec-7866-4030-9134-674ab89f586b)
+![image](https://github.com/user-attachments/assets/c05b66a4-39de-4253-be06-912d8832e7ee)
+
