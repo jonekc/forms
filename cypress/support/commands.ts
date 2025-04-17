@@ -60,13 +60,15 @@ Cypress.Commands.add('removePosts', (titles) => {
       postTitles.includes(element?.textContent || ''),
     )
     .each(($postTitle) => {
-      cy.wrap($postTitle).parent().selectById('remove-post').click();
       cy.intercept('/api/posts/**').as('removePost');
+      cy.intercept('/api/posts').as('posts');
+      cy.wrap($postTitle).parent().selectById('remove-post').click();
       cy.wrap($postTitle)
         .closest('[data-testid=post]')
         .selectById('confirm-button')
         .click();
       cy.wait('@removePost');
+      cy.wait('@posts');
     });
 });
 
